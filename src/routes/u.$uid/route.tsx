@@ -32,6 +32,9 @@ import AccountCircleOutlinedIcon from '~/icons/outline-account-circle.tsx';
 
 import InvalidSessionNoticeDialog from './InvalidSessionNoticeDialog.tsx';
 
+import { isUpdateReady, updateSW } from '~/utils/service-worker.ts';
+import AddIcon from '~/icons/baseline-add.tsx';
+
 const handleError = (error: any, reset: () => void) => {
 	const parseFileName = (file: string) => {
 		try {
@@ -247,6 +250,17 @@ const AuthenticatedLayout = () => {
 						</A>
 
 						<div class="grow" />
+						
+						<Show when={isUpdateReady()}>
+							<button
+							onClick={() => {
+								updateSW();
+							}}
+							class="mb-4 mt-2 mx-auto xl:mx-3 hidden xl:flex items-center text-center gap-4 px-3 xl:px-4 py-1.5 xl:py-2 text-sm rounded-full bg-primary hover:bg-primary/90 text-primary-fg font-bold"
+							>
+								<span>Update application</span> <AddIcon class="text-2xl group-[.is-active]:block" />
+							</button>
+						</Show>
 
 						<A
 							href={generatePath('/u/:uid/you', { uid: uid() })}
