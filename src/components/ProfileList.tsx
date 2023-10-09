@@ -109,7 +109,7 @@ const ProfileList = (props: ProfileListProps) => {
 						<button
 							onClick={() => onLoadMore(cursor())}
 							disabled={list.loading}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
 						>
 							Show more
 						</button>
