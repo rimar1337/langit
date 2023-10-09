@@ -99,10 +99,10 @@ const EmbedImage = (props: EmbedImageProps) => {
 				<Match when={images().length >= 2}>
 					<div class="flex aspect-video xl:gap-1 gap-0.5">
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
-							{render(0, false)}
+							{render(0, true)}
 							</div>
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
-							{render(1, false)}
+							{render(1, true)}
 							</div>
 					</div>
 				</Match>
