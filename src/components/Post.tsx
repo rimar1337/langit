@@ -85,10 +85,10 @@ const Post = (props: PostProps) => {
 			onClick={handleClick}
 			onAuxClick={handleClick}
 			onKeyDown={handleClick}
-			class="relative border-divider px-4 outline-2 -outline-offset-2 outline-primary focus-visible:outline"
+			class="relative border-divider px-3 lg:px-4 outline-2 -outline-offset-2 outline-primary focus-visible:outline"
 			classList={{
 				'border-b': !props.next,
-				'hover:bg-hinted': interactive(),
+				'hover:cursor-pointer': interactive(),
 				'bg-accent/20': props.highlight,
 			}}
 		>
@@ -96,7 +96,7 @@ const Post = (props: PostProps) => {
 				<Show when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost'}>
 					<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 						<div class="flex w-10 shrink-0 justify-end">
-							<RepeatIcon />
+							<RepeatIcon class="h-4 w-4"/>
 						</div>
 						<div class="min-w-0">
 							<a
@@ -104,10 +104,10 @@ const Post = (props: PostProps) => {
 								href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: reason()!.by.did })}
 								class="flex font-medium hover:underline"
 							>
-								<span dir="auto" class="line-clamp-1 break-all">
+								<span dir="auto" class="line-clamp-1 break-all font-bold">
 									{reason()!.by.displayName || reason()!.by.handle}
 								</span>
-								<span class="whitespace-pre"> Reposted</span>
+								<span class="whitespace-pre font-bold"> Reposted</span>
 							</a>
 						</div>
 					</div>
@@ -117,7 +117,7 @@ const Post = (props: PostProps) => {
 					<Match when={!prev() && parent()}>
 						<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 							<div class="flex w-10 shrink-0 justify-end">
-								<ChatBubbleOutlinedIcon />
+								<ChatBubbleOutlinedIcon class="h-4 w-4"/>
 							</div>
 							<div class="min-w-0">
 								<a
@@ -129,8 +129,8 @@ const Post = (props: PostProps) => {
 									})}
 									class="flex font-medium hover:underline"
 								>
-									<span class="whitespace-pre">Replying to </span>
-									<span dir="auto" class="line-clamp-1">
+									<span class="whitespace-pre font-bold">Replying to </span>
+									<span dir="auto" class="line-clamp-1 font-bold">
 										{parent()!.author.displayName.value || parent()!.author.handle.value}
 									</span>
 								</a>
@@ -141,7 +141,7 @@ const Post = (props: PostProps) => {
 					<Match when={!prev() && post().record.value.reply}>
 						<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 							<div class="flex w-10 shrink-0 justify-end">
-								<ChatBubbleOutlinedIcon />
+								<ChatBubbleOutlinedIcon class="h-4 w-4"/>
 							</div>
 							<div class="min-w-0">
 								<a
@@ -166,7 +166,7 @@ const Post = (props: PostProps) => {
 					<a
 						link
 						href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author().did })}
-						class="h-10 w-10 overflow-hidden rounded-full bg-muted-fg hover:opacity-80"
+						class="h-10 w-10 overflow-hidden rounded-full bg-muted-fg"
 					>
 						<Show when={author().avatar.value}>
 							{(avatar) => <img src={avatar()} class="h-full w-full" />}
@@ -217,7 +217,7 @@ const Post = (props: PostProps) => {
 											<PostMenu uid={uid()} post={post()} onTranslate={(ev) => handleClick(ev, true)} />
 										));
 									}}
-									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg hover:bg-secondary"
+									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg hover:bg-cyan-600/20 hover:text-cyan-600/80"
 								>
 									<MoreHorizIcon />
 								</button>
@@ -230,52 +230,67 @@ const Post = (props: PostProps) => {
 					<Show when={interactive()}>
 						<div class="mt-3 flex text-muted-fg">
 							<div class="flex grow basis-0 items-end gap-0.5">
-								<a
-									link
-									href={
-										generatePath('/u/:uid/compose', { uid: uid() }) +
-										`?reply=${encodeURIComponent(post().uri)}`
-									}
-									class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-secondary"
-								>
-									<ChatBubbleOutlinedIcon />
-								</a>
-								<span class="text-[0.8125rem]">{comformat.format(post().replyCount.value)}</span>
+								<div class="group xl:hover:text-cyan-600/80 flex basis-0 items-end gap-0.5">
+									<a
+										link
+										href={
+											generatePath('/u/:uid/compose', { uid: uid() }) +
+											`?reply=${encodeURIComponent(post().uri)}`
+										}
+										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover:bg-cyan-600/20"
+									>
+										<ChatBubbleOutlinedIcon />
+									</a>
+									<span class="text-[0.8125rem]" 
+										style={{ display: post().replyCount.value === 0 ? 'none' : 'inline' }}>
+									{comformat.format(post().replyCount.value)}
+									</span>
+
+								</div>
 							</div>
 
 							<div
 								class="flex grow basis-0 items-end gap-0.5"
 								classList={{ 'text-green-600': !!post().viewer.repost.value }}
 							>
-								<button
-									class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-secondary"
-									onClick={() => {
-										openModal(() => <PostRepostMenu uid={uid()} post={post()} />);
-									}}
-								>
-									<RepeatIcon />
-								</button>
-
-								<span class="text-[0.8125rem]">{comformat.format(post().repostCount.value)}</span>
+								<div class="group xl:hover:text-green-600/80 flex basis-0 items-end gap-0.5">
+									<button
+										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover:bg-green-600/20"
+										onClick={() => {
+											openModal(() => <PostRepostMenu uid={uid()} post={post()} />);
+										}}
+									>
+										<RepeatIcon />
+									</button>
+									<span class="text-[0.8125rem]" 
+										style={{ display: post().repostCount.value === 0 ? 'none' : 'inline' }}>
+									{comformat.format(post().repostCount.value)}
+									</span>
+								</div>
 							</div>
 
 							<div
 								class="group flex grow basis-0 items-end gap-0.5"
 								classList={{ 'is-active text-red-600': !!post().viewer.like.value }}
 							>
-								<button
-									class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-secondary"
-									onClick={() => favoritePost(uid(), post())}
-								>
-									<FavoriteOutlinedIcon class="group-[.is-active]:hidden" />
-									<FavoriteIcon class="hidden group-[.is-active]:block" />
-								</button>
-								<span class="text-[0.8125rem]">{comformat.format(post().likeCount.value)}</span>
+								<div class="group/wowza xl:hover:text-red-600/80 flex basis-0 items-end gap-0.5">
+									<button
+										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover/wowza:bg-red-600/20"
+										onClick={() => favoritePost(uid(), post())}
+									>
+										<FavoriteOutlinedIcon class="group-[.is-active]:hidden" />
+										<FavoriteIcon class="hidden group-[.is-active]:block" />
+									</button>
+									<span class="text-[0.8125rem]" 
+										style={{ display: post().likeCount.value === 0 ? 'none' : 'inline' }}>
+									{comformat.format(post().likeCount.value)}
+									</span>
+								</div>
 							</div>
 
 							<div class="shrink-0">
 								<button
-									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-secondary"
+									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 									onClick={() => {
 										openModal(() => <PostShareMenu post={post()} />);
 									}}
@@ -351,7 +366,10 @@ const PostContent = ({ uid, post, force, timelineDid }: PostContentProps) => {
 				<div class="text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="whitespace-pre-wrap break-words text-sm">{post().$renderedContent()}</div>
+			<div class="whitespace-pre-wrap break-words text-sm">
+					
+				{post().$renderedContent()}
+			</div>
 
 			<Show when={post().embed.value}>
 				{(embed) => <PostEmbedContent uid={uid} mod={mod} embed={embed} />}

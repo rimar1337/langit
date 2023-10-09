@@ -70,7 +70,7 @@ export default {
 			sky: colors.sky,
 		},
 		fontFamily: {
-			sans: `"Roboto", ui-sans-serif, sans-serif`,
+			sans: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`,
 			mono: `"JetBrains Mono NL", ui-monospace, monospace`,
 		},
 	},
