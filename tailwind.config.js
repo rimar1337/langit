@@ -67,6 +67,7 @@ export default {
 			red: colors.red,
 			green: colors.green,
 			blue: colors.blue,
+			cyan: colors.cyan,
 			sky: colors.sky,
 		},
 		fontFamily: {
