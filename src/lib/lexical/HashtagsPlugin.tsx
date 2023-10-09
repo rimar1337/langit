@@ -116,7 +116,7 @@ const HashtagsPlugin = () => {
 						return (
 							<div
 								ref={setFloating}
-								class="z-40 overflow-hidden rounded-md border border-divider bg-background shadow-lg"
+								class="z-40 overflow-hidden rounded-2xl border border-divider bg-background shadow-lg"
 								style={{
 									'min-width': `180px`,
 									width: 'max-content',

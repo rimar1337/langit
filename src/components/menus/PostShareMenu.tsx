@@ -25,7 +25,8 @@ const PostShareMenu = (props: PostShareMenuProps) => {
 		const author = post().author.did;
 		const status = getRecordId(post().uri);
 
-		return `${protocol}//${host}/r/profile/${author}/post/${status}`;
+		/*return `${protocol}//${host}/r/profile/${author}/post/${status}`;*/
+		return `${protocol}//bsky.app/profile/${author}/post/${status}`;
 	};
 
 	return (

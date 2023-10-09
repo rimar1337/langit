@@ -377,15 +377,15 @@ const ImageCarousel = (props: ImageCarouselProps) => {
 	});
 
 	return (
-		<div ref={view} class="relative flex h-full w-full touch-none overflow-hidden bg-black">
+		<div ref={view} class="relative flex h-full w-full touch-none overflow-hidden">
 			<div
 				ref={slider}
 				class="flex h-full w-full items-center"
 				style={{
 					transition: canAnimate() && !dragging() /* && !pinching() */ ? `all 0.3s ease` : 'none',
 					// scale: `${scale()}`,
-					// translate: `${-x()}px ${-y()}px`,
-					translate: `${-x()}px 0px`,
+					translate: `${-x()}px ${-y()}px`,
+					// translate: `${-x()}px 0px`,
 					gap: `${SLIDE_GAP}px`,
 					cursor: dragging() ? 'grabbing' : 'grab',
 				}}
