@@ -27,6 +27,9 @@ import ExploreOutlinedIcon from '~/icons/outline-explore.tsx';
 import HomeOutlinedIcon from '~/icons/outline-home.tsx';
 import NotificationsOutlinedIcon from '~/icons/outline-notifications.tsx';
 
+import AccountCircleIcon from '~/icons/baseline-account-circle.tsx';
+import AccountCircleOutlinedIcon from '~/icons/outline-account-circle.tsx';
+
 import InvalidSessionNoticeDialog from './InvalidSessionNoticeDialog.tsx';
 
 const handleError = (error: any, reset: () => void) => {
@@ -147,72 +150,103 @@ const AuthenticatedLayout = () => {
 	});
 
 	return (
-		<div class="mx-auto flex min-h-screen max-w-7xl flex-col sm:flex-row sm:justify-center">
+		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center">
 			<Show when={isDesktop()}>
-				<div class="sticky top-0 flex h-screen flex-col items-end xl:basis-1/4">
-					<div class="flex grow flex-col gap-2 p-2 lg:p-4 xl:w-64">
+				<div class="sticky top-0 flex h-screen flex-col items-end xl:basis-[30%]">
+					<div class="flex grow flex-col gap-1 p-2 lg:p-4 xl:w-64">
 						<A
 							href={generatePath('/u/:uid', { uid: uid() })}
 							title="Home"
-							class="group flex items-center rounded-md hover:bg-hinted"
+							class="group flex items-center rounded-full hover:bg-hinted p-3 mr-auto -mb-3 -mt-3"
 							activeClass="is-active"
 							end
 						>
-							<div class="p-2">
-								<HomeOutlinedIcon class="text-2xl group-[.is-active]:hidden" />
-								<HomeIcon class="hidden text-2xl group-[.is-active]:block" />
+							<div class="mr-0">
+								<div class="h-8 w-8" style="background: url(https://langit.pages.dev/favicon.svg); background-size: 40px; background-position: center center; width: 32px; height: 32px; border-radius: 35%; border: 1px solid #80808040;"/>
+							</div>
+							
+						</A>
+						<A
+							href={generatePath('/u/:uid', { uid: uid() })}
+							title="Home"
+							class="group flex items-center rounded-full hover:bg-hinted p-3 xl:mr-auto"
+							activeClass="is-active"
+							end
+						>
+							<div class="xl:mr-2">
+								<HomeOutlinedIcon class="text-3xl group-[.is-active]:hidden" />
+								<HomeIcon class="hidden text-3xl group-[.is-active]:block" />
 							</div>
 
-							<span class="hidden text-base group-[.is-active]:font-medium xl:inline">Home</span>
+							<span class="hidden text-xl group-[.is-active]:font-bold xl:inline mr-2">Home</span>
 						</A>
 
 						<A
 							href={generatePath('/u/:uid/explore', { uid: uid() })}
 							title="Search"
-							class="group flex items-center rounded-md hover:bg-hinted"
+							class="group flex items-center rounded-full hover:bg-hinted p-3 xl:mr-auto"
 							activeClass="is-active"
 						>
-							<div class="p-2">
-								<ExploreOutlinedIcon class="text-2xl group-[.is-active]:hidden" />
-								<ExploreIcon class="hidden text-2xl group-[.is-active]:block" />
+							<div class="xl:mr-2">
+								<ExploreOutlinedIcon class="text-3xl group-[.is-active]:hidden" />
+								<ExploreIcon class="hidden text-3xl group-[.is-active]:block" />
 							</div>
 
-							<span class="hidden text-base group-[.is-active]:font-medium xl:inline">Explore</span>
+							<span class="hidden text-xl group-[.is-active]:font-bold xl:inline mr-2">Explore</span>
 						</A>
 
 						<A
 							href={generatePath('/u/:uid/notifications', { uid: uid() })}
 							title="Notifications"
-							class="group flex items-center rounded-md hover:bg-hinted"
+							class="group flex items-center rounded-full hover:bg-hinted p-3 xl:mr-auto"
 							activeClass="is-active"
 						>
-							<div class="relative p-2">
-								<NotificationsOutlinedIcon class="text-2xl group-[.is-active]:hidden" />
-								<NotificationsIcon class="hidden text-2xl group-[.is-active]:block" />
+							<div class="relative xl:mr-2">
+								<NotificationsOutlinedIcon class="text-3xl group-[.is-active]:hidden" />
+								<NotificationsIcon class="hidden text-3xl group-[.is-active]:block" />
 
 								<Show when={latestNotification() && !latestNotification()!.read}>
 									<div class="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
 								</Show>
 							</div>
 
-							<span class="hidden text-base group-[.is-active]:font-medium xl:inline">Notifications</span>
+							<span class="hidden text-xl group-[.is-active]:font-bold xl:inline mr-2">Notifications</span>
 						</A>
 
-						<div class="grow" />
+						<A
+							href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: uid() })}
+							title="Profile"
+							class="group flex items-center rounded-full hover:bg-hinted p-3 xl:mr-auto"
+							activeClass="is-active"
+						>
+							<div class="relative xl:mr-2">
+								<AccountCircleOutlinedIcon class="text-3xl group-[.is-active]:hidden" />
+								<AccountCircleIcon class="hidden text-3xl group-[.is-active]:block" />
+							</div>
+
+							<span class="hidden text-xl group-[.is-active]:font-bold xl:inline mr-2">Profile</span>
+						</A>
 
 						<A
 							href={generatePath('/u/:uid/compose', { uid: uid() })}
 							title="Compose"
-							class="group flex items-center rounded-md hover:bg-hinted"
+							class="group flex items-center justify-center rounded-full bg-blue-500 mt-2 mx-auto xl:mx-3"
 							activeClass="is-active"
 						>
-							<div class="p-2">
+							<div class="p-3 xl:text-transparent block xl:block ">
 								<AddBoxOutlinedIcon class="text-2xl group-[.is-active]:hidden" />
 								<AddBoxIcon class="hidden text-2xl group-[.is-active]:block" />
 							</div>
 
-							<span class="hidden text-base group-[.is-active]:font-medium xl:inline">Compose</span>
+							<span class="hidden text-base xl:inline font-bold">Compose</span>
+
+							<div class="p-3 text-transparent hidden xl:block">
+								<AddBoxOutlinedIcon class="text-2xl group-[.is-active]:hidden" />
+								<AddBoxIcon class="hidden text-2xl group-[.is-active]:block" />
+							</div>
 						</A>
+
+						<div class="grow" />
 
 						<A
 							href={generatePath('/u/:uid/you', { uid: uid() })}
@@ -238,13 +272,13 @@ const AuthenticatedLayout = () => {
 				</div>
 			</Show>
 
-			<div class="flex min-w-0 max-w-2xl shrink grow flex-col border-divider sm:border-x xl:max-w-none xl:basis-2/4">
+			<div class="flex min-w-0 md:max-w-[600px] shrink grow flex-col border-divider sm:border-x xl:max-w-none xl:basis-[40%]">
 				<ErrorBoundary fallback={handleError}>
 					<Outlet />
 				</ErrorBoundary>
 			</div>
 
-			<div class="hidden basis-1/4 xl:block"></div>
+			<div class="hidden basis-[30%] xl:block"></div>
 
 			<Show when={!isDesktop()}>
 				<div class="sticky bottom-0 z-30 flex h-13 border-t border-divider bg-background text-primary">

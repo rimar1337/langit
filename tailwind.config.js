@@ -66,6 +66,8 @@ export default {
 			white: colors.white,
 			red: colors.red,
 			green: colors.green,
+			blue: colors.blue,
+			sky: colors.sky,
 		},
 		fontFamily: {
 			sans: `"Roboto", ui-sans-serif, sans-serif`,
