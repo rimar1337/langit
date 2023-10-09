@@ -122,7 +122,7 @@ const AuthenticatedHome = () => {
 					onClick={() => {
 						updateSW();
 					}}
-					class="flex items-center gap-4 px-3 xl:px-4 py-1.5 xl:py-2 text-sm hover:bg-hinted rounded-full bg-primary hover:bg-primary/90 text-primary-fg font-bold"
+					class="xl:hidden flex items-center gap-4 px-3 xl:px-4 py-1.5 xl:py-2 text-sm rounded-full bg-primary hover:bg-primary/90 text-primary-fg font-bold"
 					>
 						<span>Update application</span>
 					</button>

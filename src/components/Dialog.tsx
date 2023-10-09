@@ -88,7 +88,7 @@ const Dialog = (props: DialogProps) => {
 					onClose();
 				}
 			}}
-			class="m-0 h-full max-h-none w-full max-w-none justify-center overflow-visible bg-transparent p-0 backdrop:bg-blue-800/10 modal:flex dark:bg-hinted/30"
+			class="m-0 h-full max-h-none w-full max-w-none justify-center overflow-visible bg-transparent p-0 backdrop:bg-sky-800/10 modal:flex dark:bg-hinted/30"
 			classList={{ 'items-center': props.centered, 'items-end sm:items-center': !props.centered }}
 			data-modal
 		>

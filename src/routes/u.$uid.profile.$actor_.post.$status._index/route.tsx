@@ -283,7 +283,7 @@ const AuthenticatedPostPage = () => {
 														/>
 													));
 												}}
-												class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg hover:bg-secondary"
+												class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 											>
 												<MoreHorizIcon />
 											</button>
@@ -328,24 +328,32 @@ const AuthenticatedPostPage = () => {
 										</span>
 									</div>
 
-									<hr class="border-divider" />
+									<hr class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "border-divider"} />
 
-									<div class="flex flex-wrap gap-4 py-3 text-sm">
+									<div class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "flex flex-wrap gap-4 py-3 text-sm"}>
 										<a
 											link
-											href={generatePath('/u/:uid/profile/:actor/post/:status/reposts', params)}
-											class="hover:underline"
-										>
-											<span class="font-bold">{comformat.format(post.repostCount.value)}</span>{' '}
-											<span class="text-muted-fg">Reposts</span>
+											href={post.repostCount.value === 0 ? undefined : generatePath('/u/:uid/profile/:actor/post/:status/reposts', params)}
+											class={post.repostCount.value === 0 ? "hidden" : "hover:underline"}
+											>
+											{post.repostCount.value !== 0 && (
+												<>
+												<span class="font-bold">{comformat.format(post.repostCount.value)}</span>{' '}
+												<span class="text-muted-fg">Reposts</span>
+												</>
+											)}
 										</a>
 										<a
 											link
-											href={generatePath('/u/:uid/profile/:actor/post/:status/likes', params)}
-											class="hover:underline"
-										>
-											<span class="font-bold">{comformat.format(post.likeCount.value)}</span>{' '}
-											<span class="text-muted-fg">Likes</span>
+											href={post.likeCount.value === 0 ? undefined : generatePath('/u/:uid/profile/:actor/post/:status/likes', params)}
+											class={post.likeCount.value === 0 ? "hidden" : "hover:underline"}
+											>
+											{post.likeCount.value !== 0 && (
+												<>
+												<span class="font-bold">{comformat.format(post.likeCount.value)}</span>{' '}
+												<span class="text-muted-fg">likes</span>
+												</>
+											)}
 										</a>
 									</div>
 
@@ -355,13 +363,13 @@ const AuthenticatedPostPage = () => {
 										<a
 											link
 											href={`/u/${uid()}/compose?reply=${encodeURIComponent(post.uri)}`}
-											class="flex h-9 w-9 items-center justify-center rounded-full text-xl hover:bg-secondary"
+											class="flex h-9 w-9 items-center justify-center rounded-full text-xl xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 										>
 											<ChatBubbleOutlinedIcon />
 										</a>
 
 										<button
-											class="flex h-9 w-9 items-center justify-center rounded-full text-xl hover:bg-secondary"
+											class="flex h-9 w-9 items-center justify-center rounded-full text-xl xl:hover:bg-green-600/20 xl:hover:text-green-600/80"
 											classList={{
 												'text-green-600': !!post.viewer.repost.value,
 											}}
@@ -369,11 +377,11 @@ const AuthenticatedPostPage = () => {
 												openModal(() => <PostRepostMenu uid={uid()} post={post} />);
 											}}
 										>
-											<RepeatIcon />
+											<RepeatIcon class="scale-110"/>
 										</button>
 
 										<button
-											class="group flex h-9 w-9 items-center justify-center rounded-full text-xl hover:bg-secondary"
+											class="group flex h-9 w-9 items-center justify-center rounded-full text-xl xl:hover:bg-red-600/20 xl:hover:text-red-600/80"
 											classList={{ 'is-active text-red-600': !!post.viewer.like.value }}
 											onClick={() => favoritePost(uid(), post)}
 										>
@@ -382,7 +390,7 @@ const AuthenticatedPostPage = () => {
 										</button>
 
 										<button
-											class="flex h-9 w-9 items-center justify-center rounded-full text-xl hover:bg-secondary"
+											class="flex h-9 w-9 items-center justify-center rounded-full text-xl xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 											onClick={() => {
 												openModal(() => <PostShareMenu post={post} />);
 											}}

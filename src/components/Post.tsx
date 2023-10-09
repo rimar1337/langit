@@ -241,7 +241,7 @@ const Post = (props: PostProps) => {
 									>
 										<ChatBubbleOutlinedIcon />
 									</a>
-									<span class="text-[0.8125rem]" 
+									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().replyCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().replyCount.value)}
 									</span>
@@ -260,9 +260,9 @@ const Post = (props: PostProps) => {
 											openModal(() => <PostRepostMenu uid={uid()} post={post()} />);
 										}}
 									>
-										<RepeatIcon />
+										<RepeatIcon class="scale-110"/>
 									</button>
-									<span class="text-[0.8125rem]" 
+									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().repostCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().repostCount.value)}
 									</span>
@@ -281,7 +281,7 @@ const Post = (props: PostProps) => {
 										<FavoriteOutlinedIcon class="group-[.is-active]:hidden" />
 										<FavoriteIcon class="hidden group-[.is-active]:block" />
 									</button>
-									<span class="text-[0.8125rem]" 
+									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().likeCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().likeCount.value)}
 									</span>
