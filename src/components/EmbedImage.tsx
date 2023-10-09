@@ -85,7 +85,9 @@ const EmbedImage = (props: EmbedImageProps) => {
 
 				<Match when={images().length >= 3}>
 					<div class="flex aspect-video xl:gap-1 gap-0.5">
-						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">{render(0, false)}</div>
+						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
+							{render(0, true)}
+						</div>
 
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
 							{render(1, false)}
@@ -96,8 +98,12 @@ const EmbedImage = (props: EmbedImageProps) => {
 
 				<Match when={images().length >= 2}>
 					<div class="flex aspect-video xl:gap-1 gap-0.5">
-						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">{render(0, false)}</div>
-						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">{render(1, false)}</div>
+						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
+							{render(0, false)}
+							</div>
+						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
+							{render(1, false)}
+							</div>
 					</div>
 				</Match>
 
