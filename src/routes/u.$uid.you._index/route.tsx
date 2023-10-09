@@ -266,6 +266,7 @@ const AuthenticatedYouPage = () => {
 					</a>
 				</p>
 			)}
+			<span class="font-normal text-center text-xs text-muted-fg">Langit (skye-puce fork)</span>
 		</div>
 	);
 };

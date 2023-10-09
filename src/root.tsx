@@ -6,7 +6,7 @@ import { MetaProvider, Title } from '~/utils/meta.tsx';
 const Root = () => {
 	return (
 		<MetaProvider>
-			<Title render="Langit" />
+			<Title render="Langit (skye-puce fork)" />
 
 			<Outlet />
 			<ModalProvider />

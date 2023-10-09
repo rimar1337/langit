@@ -22,8 +22,8 @@ export default defineConfig({
 				cleanupOutdatedCaches: true,
 			},
 			manifest: {
-				name: 'Langit',
-				short_name: 'Langit',
+				name: 'Langit (skye-puce fork)',
+				short_name: 'Skye-puce',
 				description: 'Alternative client for Bluesky social media',
 				display: 'standalone',
 				id: '/?source=pwa',

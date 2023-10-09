@@ -36,6 +36,7 @@ const IndexPage = () => {
 		<div class="mx-auto flex min-h-screen min-w-0 max-w-2xl flex-col border-divider p-4 sm:border-x">
 			<div class="flex grow flex-col items-center justify-center">
 				<h1 class="text-center text-2xl font-bold">Langit</h1>
+				<span class="text-center text-xl font-normal">(skye-puce fork)</span>
 
 				<div class="mt-4 flex w-full max-w-md flex-col gap-2 sm:flex-row sm:justify-center">
 					<a
