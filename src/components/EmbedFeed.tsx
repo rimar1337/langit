@@ -26,7 +26,7 @@ const EmbedFeed = (props: EmbedFeedProps) => {
 				actor: feed().creator.did,
 				feed: getRecordId(feed().uri),
 			})}
-			class="flex flex-col gap-2 rounded-md border border-divider p-3 text-sm hover:bg-secondary"
+			class="flex flex-col gap-2 rounded-2xl border border-divider p-3 text-sm hover:bg-secondary/30"
 		>
 			<div class="flex items-center gap-3">
 				<div class="h-9 w-9 overflow-hidden rounded-md bg-muted-fg">

@@ -35,8 +35,8 @@ const EmbedLink = (props: EmbedLinkProps) => {
 			href={link().uri}
 			rel="noopener noreferrer nofollow"
 			target="_blank"
-			class="flex overflow-hidden rounded-md border border-divider"
-			classList={{ 'hover:bg-secondary': interactive() }}
+			class="flex overflow-hidden rounded-2xl border border-divider"
+			classList={{ 'hover:bg-secondary/30': interactive() }}
 		>
 			<Show when={link().thumb} keyed>
 				{(thumb) => (

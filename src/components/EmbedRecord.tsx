@@ -104,7 +104,7 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 		<Show
 			when={!mod()?.b || force()}
 			fallback={
-				<div class="flex items-stretch justify-between gap-3 overflow-hidden rounded-md border border-divider">
+				<div class="flex items-stretch justify-between gap-3 overflow-hidden rounded-2xl border border-divider">
 					<p class="m-3 text-sm text-muted-fg">
 						{(() => {
 							const $mod = mod()!;
@@ -130,8 +130,8 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 			<Dynamic
 				component={interactive() ? A : 'div'}
 				href={`/u/${props.uid}/profile/${author().did}/post/${getRecordId(record().uri)}`}
-				class="overflow-hidden rounded-md border border-divider"
-				classList={{ 'cursor-pointer hover:bg-secondary': interactive() }}
+				class="overflow-hidden rounded-2xl border border-divider"
+				classList={{ 'cursor-pointer hover:bg-secondary/30': interactive() }}
 			>
 				<div class="mx-3 mt-3 flex text-sm text-muted-fg">
 					<div class="mr-1 h-5 w-5 shrink-0 overflow-hidden rounded-full bg-muted-fg">
