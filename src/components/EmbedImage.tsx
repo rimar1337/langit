@@ -35,8 +35,12 @@ const EmbedImage = (props: EmbedImageProps) => {
 					alt={alt}
 					onClick={() => {
 						if (interactive) {
-							openModal(() => <LazyImageViewerDialog images={images()} active={index} />);
-						}
+							const imageViewerComponent = () => <LazyImageViewerDialog images={images()} active={index} />;
+							openModal(() => {
+							  history.pushState({ modal: true }, '');
+							  return imageViewerComponent();
+							});
+						  }
 					}}
 					class="h-full w-full object-cover"
 					classList={{

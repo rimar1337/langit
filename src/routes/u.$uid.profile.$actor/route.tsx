@@ -143,7 +143,11 @@ const AuthenticatedProfileLayout = () => {
 									{(banner) => (
 										<button
 											onClick={() => {
-												openModal(() => <LazyImageViewerDialog images={[{ fullsize: banner }]} />);
+												const imageViewerComponent = () => <LazyImageViewerDialog images={[{ fullsize: banner }]} />;
+												openModal(() => {
+												  history.pushState({ modal: true }, '');
+												  return imageViewerComponent();
+												});
 											}}
 											class="aspect-banner bg-background"
 										>
@@ -164,7 +168,11 @@ const AuthenticatedProfileLayout = () => {
 											{(avatar) => (
 												<button
 													onClick={() => {
-														openModal(() => <LazyImageViewerDialog images={[{ fullsize: avatar }]} />);
+														const imageViewerComponent = () => <LazyImageViewerDialog images={[{ fullsize: avatar }]} />;
+														openModal(() => {
+														  history.pushState({ modal: true }, '');
+														  return imageViewerComponent();
+														});
 													}}
 													class="-mt-11 h-20 w-20 xl:h-32 xl:w-32 xl:-mt-20 shrink-0 overflow-hidden rounded-full bg-background outline-4 outline-background outline focus-visible:outline-primary"
 												>

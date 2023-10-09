@@ -29,13 +29,21 @@ const ImageViewerDialog = (props: ImageViewerDialogProps) => {
 	const hasNext = () => active() < images().length - 1;
 	const hasPrev = () => active() > 0;
 
+	const [isModalClosed, setIsModalClosed] = createSignal(false);
+	const handleGoBack = () => {
+		if (!isModalClosed()) {
+			window.history.go(-1); // Go back one step in browser history
+			setIsModalClosed(true);
+		}
+	};
+
 	return (
 		<>
 			<ImageCarousel
 				active={active()}
 				images={images()}
 				onActiveChange={setActive}
-				onClose={() => closeModal()}
+				onClose={() => {closeModal(); handleGoBack(); setIsModalClosed(true)}}
 			/>
 
 			<Show when={isFine()}>
@@ -64,6 +72,8 @@ const ImageViewerDialog = (props: ImageViewerDialogProps) => {
 				title="Close viewer"
 				onClick={() => {
 					closeModal();
+					handleGoBack();
+					setIsModalClosed(true);
 				}}
 				class="fixed left-2.5 top-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black text-base hover:bg-secondary"
 			>
@@ -306,6 +316,25 @@ const ImageCarousel = (props: ImageCarouselProps) => {
 	// 	setX(Math.min($shiftRestrictions.right, Math.max($shiftRestrictions.left, x())));
 	// 	setY(Math.min($shiftRestrictions.bottom, Math.max($shiftRestrictions.top, y())));
 	// };
+	const handleImageClick = (event: MouseEvent) => {
+		if (event.target instanceof HTMLImageElement) {
+			return;
+		}
+		onClose();
+	};
+
+	const handleCloseOnPopState = () => {
+        closeModal();
+    };
+
+    onMount(() => {
+        window.addEventListener('popstate', handleCloseOnPopState);
+
+        return () => {
+            window.removeEventListener('popstate', handleCloseOnPopState);
+        };
+    });
+
 
 	onMount(() => {
 		// const gapAsScale = SLIDE_GAP / view!.clientWidth;
@@ -374,6 +403,7 @@ const ImageCarousel = (props: ImageCarouselProps) => {
 				},
 			},
 		);
+		view!.addEventListener('click', handleImageClick);
 	});
 
 	return (
