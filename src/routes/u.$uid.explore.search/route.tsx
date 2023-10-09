@@ -12,6 +12,8 @@ import { Tab } from '~/components/Tab.tsx';
 import SearchUsers from './SearchUsers.tsx';
 import SearchPosts from './SearchPosts.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const enum SearchType {
 	USERS = 'user',
 	POSTS = 'post',
@@ -38,10 +40,16 @@ const AuthenticatedSearchPage = () => {
 		setSearchParams({ t: type }, { replace: true });
 	};
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
+
 	return (
 		<div class="flex flex-col">
 			<div class="sticky top-0 z-20 bg-background">
 				<div class="flex h-13 items-center gap-2 px-4">
+					<button onClick={handleGoBack} class="text-base font-bold p-3 -ml-3"><ArrowLeftIcon/></button>
 					<SearchInput
 						value={query()}
 						onEnter={(next) => {
@@ -52,7 +60,7 @@ const AuthenticatedSearchPage = () => {
 					/>
 				</div>
 
-				<div class="flex h-13 overflow-x-auto border-b border-divider">
+				<div class="flex h-10 xl:h-13 overflow-x-auto border-b border-divider">
 					<Tab
 						component="button"
 						active={type() === SearchType.POSTS}

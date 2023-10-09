@@ -272,7 +272,7 @@ const AuthenticatedLayout = () => {
 				</div>
 			</Show>
 
-			<div class="flex min-w-0 md:max-w-[600px] shrink grow flex-col border-divider sm:border-x xl:max-w-none xl:basis-[40%]">
+			<div class="flex min-w-0 md:max-w-[600px] xl:min-w-[600px] shrink grow flex-col border-divider sm:border-x xl:max-w-none xl:basis-[40%]">
 				<ErrorBoundary fallback={handleError}>
 					<Outlet />
 				</ErrorBoundary>

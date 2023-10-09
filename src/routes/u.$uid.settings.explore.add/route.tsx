@@ -11,6 +11,8 @@ import { useParams } from '~/router.ts';
 import FeedList from '~/components/FeedList.tsx';
 import SearchInput from '~/components/SearchInput.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const AuthenticatedAddFeedPage = () => {
 	const params = useParams('/u/:uid/settings/explore/add');
 
@@ -26,9 +28,14 @@ const AuthenticatedAddFeedPage = () => {
 		refetchOnReconnect: false,
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold leading-5">Discover feeds</p>
 			</div>
 

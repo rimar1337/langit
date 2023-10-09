@@ -209,7 +209,7 @@ const AuthenticatedBlockedUsersModerationPage = () => {
 						<button
 							onClick={() => refetch(true, cursor())}
 							disabled={blocks.loading}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
 						>
 							Show more
 						</button>

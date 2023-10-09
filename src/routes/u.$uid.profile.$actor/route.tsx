@@ -31,6 +31,8 @@ import { BlockedByList, isBlockedByList } from './BlockedByList.tsx';
 import ProfileIdentifierDialog from './ProfileIdentifierDialog.tsx';
 import ProfileMenu from './ProfileMenu.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const ERROR_NAMES = ['InvalidRequest', 'AccountTakedown'];
 
 const LazyImageViewerDialog = lazy(() => import('~/components/dialogs/ImageViewerDialog.tsx'));
@@ -66,9 +68,14 @@ const AuthenticatedProfileLayout = () => {
 		refetchOnWindowFocus: false,
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex grow flex-col">
-			<div class="sticky top-0 z-20 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-20 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<Switch>
 					<Match when={profile()}>
 						{(profile) => (
@@ -138,20 +145,20 @@ const AuthenticatedProfileLayout = () => {
 											onClick={() => {
 												openModal(() => <LazyImageViewerDialog images={[{ fullsize: banner }]} />);
 											}}
-											class="group aspect-banner bg-background"
+											class="aspect-banner bg-background"
 										>
-											<img src={banner} class="h-full w-full object-cover group-hover:opacity-75" />
+											<img src={banner} class="h-full w-full object-cover" />
 										</button>
 									)}
 								</Show>
 
-								<div class="z-10 flex flex-col gap-3 p-4">
+								<div class="z-10 flex flex-col gap-3 px-4 py-3">
 									<div class="flex gap-2">
 										<Show
 											when={profile().avatar.value}
 											keyed
 											fallback={
-												<div class="-mt-11 h-20 w-20 shrink-0 overflow-hidden rounded-full bg-muted-fg outline-2 outline-background outline"></div>
+												<div class="-mt-11 h-20 w-20 shrink-0 overflow-hidden rounded-full bg-muted-fg outline-4 outline-background outline"></div>
 											}
 										>
 											{(avatar) => (
@@ -159,9 +166,9 @@ const AuthenticatedProfileLayout = () => {
 													onClick={() => {
 														openModal(() => <LazyImageViewerDialog images={[{ fullsize: avatar }]} />);
 													}}
-													class="group -mt-11 h-20 w-20 shrink-0 overflow-hidden rounded-full bg-background outline-2 outline-background outline focus-visible:outline-primary"
+													class="-mt-11 h-20 w-20 xl:h-32 xl:w-32 xl:-mt-20 shrink-0 overflow-hidden rounded-full bg-background outline-4 outline-background outline focus-visible:outline-primary"
 												>
-													<img src={avatar} class="h-full w-full group-hover:opacity-75" />
+													<img src={avatar} class="h-full w-full" />
 												</button>
 											)}
 										</Show>
@@ -173,7 +180,7 @@ const AuthenticatedProfileLayout = () => {
 												<a
 													link
 													href={generatePath('/u/:uid/settings/profile', params)}
-													class={/* @once */ button({ color: 'primary' })}
+													class={/* @once */ button({ color: 'outline' })}
 												>
 													Edit profile
 												</a>
@@ -185,7 +192,7 @@ const AuthenticatedProfileLayout = () => {
 													onClick={() => {
 														openModal(() => <ProfileMenu uid={uid()} profile={profile()} />);
 													}}
-													class={/* @once */ button({ color: 'outline' })}
+													class={/* @once */ button({ color: 'outline' }) + ' aspect-square'}
 												>
 													<MoreHorizIcon class="-mx-1.5 text-base" />
 												</button>
@@ -332,7 +339,7 @@ const AuthenticatedProfileLayout = () => {
 									</Match>
 
 									<Match when>
-										<div class="flex h-13 overflow-x-auto border-b border-divider">
+										<div class="flex h-10 xl:h-13 overflow-x-auto border-b border-divider">
 											<TabLink href={generatePath('/u/:uid/profile/:actor', params)} replace end>
 												Posts
 											</TabLink>

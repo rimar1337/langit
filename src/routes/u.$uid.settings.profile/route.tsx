@@ -18,6 +18,8 @@ import button from '~/styles/primitives/button.ts';
 import input from '~/styles/primitives/input';
 import textarea from '~/styles/primitives/textarea.ts';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const MAX_NAME_LENGTH = 64;
 const MAX_BIO_LENGTH = 256;
 
@@ -96,9 +98,14 @@ const AuthenticatedProfileSettingsPage = () => {
 		onSuccess: () => refetch(true),
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<div class="sticky top-0 z-20 flex h-13 items-center gap-4 border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold p-3 -ml-3"><ArrowLeftIcon/></button>
 				<div class="flex grow flex-col gap-0.5">
 					<p class="text-base font-bold leading-5">Edit profile</p>
 

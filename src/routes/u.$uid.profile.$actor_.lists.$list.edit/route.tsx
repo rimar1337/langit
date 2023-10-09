@@ -18,6 +18,8 @@ import CircularProgress from '~/components/CircularProgress.tsx';
 import ListForm, { type ListSubmissionData } from '../u.$uid.you.moderation.lists.self.new/ListForm.tsx';
 import { uploadBlob } from '~/api/mutations/upload-blob.ts';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 type ListRecord = Records['app.bsky.graph.list'];
 
 const AuthenticatedListsEditPage = () => {
@@ -118,6 +120,9 @@ const AuthenticatedListsEditPage = () => {
 		const $list = list();
 		return $list ? $list.creator.did !== uid() : false;
 	};
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
 
 	return (
 		<div>
@@ -133,7 +138,8 @@ const AuthenticatedListsEditPage = () => {
 				}}
 			/>
 
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Edit user list</p>
 			</div>
 

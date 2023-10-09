@@ -22,6 +22,8 @@ import button from '~/styles/primitives/button.ts';
 
 import Notification from './Notification.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const PAGE_SIZE = 30;
 
 const sleep = (ms: number) => {
@@ -109,12 +111,17 @@ const AuthenticatedNotificationsPage = () => {
 		return next;
 	}, 0 as const);
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex grow flex-col">
 			<Title render="Notifications / Langit" />
 
 			<div class="sticky top-0 z-10 flex h-13 items-center justify-between gap-4 border-b border-divider bg-background px-4">
-				<p class="text-base font-bold">Notifications</p>
+				<button onClick={handleGoBack} class="text-base font-bold p-3 -ml-3"><ArrowLeftIcon/></button>
+				<p class="text-base font-bold mr-auto">Notifications</p>
 
 				<button
 					disabled={read.isLoading || notifications.loading}
@@ -180,7 +187,7 @@ const AuthenticatedNotificationsPage = () => {
 						<button
 							onClick={() => refetch(true, cursor())}
 							disabled={notifications.loading}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
 						>
 							Show more notifications
 						</button>

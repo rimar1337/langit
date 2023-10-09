@@ -25,6 +25,8 @@ import VirtualContainer from '~/components/VirtualContainer.tsx';
 import RefreshIcon from '~/icons/baseline-refresh.tsx';
 import SettingsIcon from '~/icons/baseline-settings.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const MAX_POSTS = 6;
 
 const AuthenticatedExplorePage = () => {
@@ -57,12 +59,16 @@ const AuthenticatedExplorePage = () => {
 			Promise.all(promises).then(() => setRefetching(false));
 		}
 	};
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
 
 	return (
 		<div class="flex flex-col pb-4">
 			<Title render='Explore / Langit' />
 
 			<div class="sticky top-0 z-20 flex h-13 items-center gap-2 border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold p-3 -ml-3"><ArrowLeftIcon/></button>
 				<SearchInput
 					onEnter={(next) => {
 						if (next.trim()) {

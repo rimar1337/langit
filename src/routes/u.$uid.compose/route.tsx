@@ -69,6 +69,8 @@ import ComposeLanguageMenu from './ComposeLanguageMenu.tsx';
 import ImageAltEditDialog from './ImageAltEditDialog.tsx';
 import ImageUploadCompressDialog from './ImageUploadCompressDialog.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 import './lexical-compose.css';
 
 type PostRecord = Records['app.bsky.feed.post'];
@@ -460,11 +462,16 @@ const AuthenticatedComposePage = () => {
 		}
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<Title render="Compose / Langit" />
 
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Compose</p>
 			</div>
 

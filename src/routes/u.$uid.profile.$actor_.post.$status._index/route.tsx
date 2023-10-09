@@ -39,6 +39,8 @@ import ShareIcon from '~/icons/baseline-share.tsx';
 import ChatBubbleOutlinedIcon from '~/icons/outline-chat-bubble.tsx';
 import FavoriteOutlinedIcon from '~/icons/outline-favorite.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 import PostTranslation from './PostTranslation.tsx';
 
 const seen = new Set<string>();
@@ -79,6 +81,10 @@ const AuthenticatedPostPage = () => {
 		});
 	};
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<Title
@@ -98,7 +104,8 @@ const AuthenticatedPostPage = () => {
 				}}
 			/>
 
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Post</p>
 			</div>
 
@@ -323,7 +330,7 @@ const AuthenticatedPostPage = () => {
 
 									<hr class="border-divider" />
 
-									<div class="flex flex-wrap gap-4 py-4 text-sm">
+									<div class="flex flex-wrap gap-4 py-3 text-sm">
 										<a
 											link
 											href={generatePath('/u/:uid/profile/:actor/post/:status/reposts', params)}
@@ -344,7 +351,7 @@ const AuthenticatedPostPage = () => {
 
 									<hr class="border-divider" />
 
-									<div class="flex h-13 items-center justify-around text-muted-fg">
+									<div class="flex h-11 items-center justify-around text-muted-fg -mx-4">
 										<a
 											link
 											href={`/u/${uid()}/compose?reply=${encodeURIComponent(post.uri)}`}
@@ -497,7 +504,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 
 		return (
 			<>
-				<div class="mt-3 flex items-stretch justify-between gap-3 overflow-hidden rounded-md border border-divider">
+				<div class="mt-3 flex items-stretch justify-between gap-3 overflow-hidden rounded-2xl border border-divider">
 					<p class="m-3 text-sm text-muted-fg">{title}</p>
 
 					<button
@@ -590,7 +597,7 @@ const PostEmbedContent = ({ uid, mod, embed, force }: PostEmbedContentProps) => 
 
 		return (
 			<>
-				<div class="mt-3 flex items-stretch justify-between gap-3 overflow-hidden rounded-md border border-divider">
+				<div class="mt-3 flex items-stretch justify-between gap-3 overflow-hidden rounded-2xl border border-divider">
 					<p class="m-3 text-sm text-muted-fg">{title}</p>
 
 					<button

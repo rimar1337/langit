@@ -19,7 +19,6 @@ import {
 	getTimelineLatestKey,
 } from '~/api/queries/get-timeline.ts';
 
-import { openModal } from '~/globals/modals.tsx';
 import { getAccountPreferences } from '~/globals/preferences.ts';
 import { generatePath, useParams } from '~/router.ts';
 import * as comformat from '~/utils/intl/comformatter.ts';
@@ -28,11 +27,10 @@ import { Title } from '~/utils/meta.tsx';
 import TimelineList from '~/components/TimelineList.tsx';
 import button from '~/styles/primitives/button.ts';
 
-import FavoriteIcon from '~/icons/baseline-favorite.tsx';
 import FavoriteOutlinedIcon from '~/icons/outline-favorite.tsx';
-import MoreHorizIcon from '~/icons/baseline-more-horiz.tsx';
+import FavoriteIcon from '~/icons/baseline-favorite';
 
-import FeedMenu from './FeedMenu.tsx';
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
 
 const AuthenticatedFeedPage = () => {
 	const params = useParams('/u/:uid/profile/:actor/feed/:feed');
@@ -128,9 +126,13 @@ const AuthenticatedFeedPage = () => {
 		return next;
 	}, 0 as const);
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
 				<Switch>
 					<Match when={info()}>
 						{(info) => (
@@ -141,6 +143,7 @@ const AuthenticatedFeedPage = () => {
 										return `Feed (${$info.displayName.value || feed()}) / Langit`;
 									}}
 								/>
+								<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 								<p class="text-base font-bold">{info().displayName.value}</p>
 							</>
 						)}
@@ -148,6 +151,7 @@ const AuthenticatedFeedPage = () => {
 
 					<Match when>
 						<Title render={() => `Feed (${feed()}) / Langit`} />
+						<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 						<p class="text-base font-bold">Feed</p>
 					</Match>
 				</Switch>
@@ -204,16 +208,6 @@ const AuthenticatedFeedPage = () => {
 										) : (
 											<FavoriteOutlinedIcon class="-mx-1.5 text-base" />
 										)}
-									</button>
-
-									<div class="grow" />
-
-									<button
-										title="More actions"
-										onClick={() => openModal(() => <FeedMenu uid={uid()} feed={info()} />)}
-										class={/* @once */ button({ color: 'outline' })}
-									>
-										<MoreHorizIcon class="-mx-1.5 text-base" />
 									</button>
 								</div>
 							</div>

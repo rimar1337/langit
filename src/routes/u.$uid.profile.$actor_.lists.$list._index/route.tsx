@@ -23,6 +23,8 @@ import MoreHorizIcon from '~/icons/baseline-more-horiz.tsx';
 import ListMenu from './ListMenu.tsx';
 import SubscribeListDialog from './SubscribeListDialog.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const enum Subscription {
 	MUTED = 1,
 	BLOCKED,
@@ -74,14 +76,19 @@ const AuthenticatedListPage = () => {
 		return raw && raw in ListPurposeLabels ? ListPurposeLabels[raw] : `Unknown list`;
 	};
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex grow flex-col">
-			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
 				<Switch>
 					<Match when={list()}>
 						{(info) => (
 							<>
 								<Title render={() => `List (${info().name.value}) / Langit`} />
+								<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 								<p class="text-base font-bold">{info().name.value}</p>
 							</>
 						)}
@@ -89,6 +96,7 @@ const AuthenticatedListPage = () => {
 
 					<Match when>
 						<Title render={() => `List (${params.list}) / Langit`} />
+						<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 						<p class="text-base font-bold">List</p>
 					</Match>
 				</Switch>
@@ -240,7 +248,7 @@ const AuthenticatedListPage = () => {
 					{(cursor) => (
 						<button
 							onClick={() => refetch(true, cursor())}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
 						>
 							Show more
 						</button>

@@ -25,6 +25,8 @@ import { Title } from '~/utils/meta.tsx';
 import { Tab } from '~/components/Tab.tsx';
 import TimelineList from '~/components/TimelineList.tsx';
 
+import { isUpdateReady, updateSW } from '~/utils/service-worker.ts';
+
 const FeedTab = (props: { uid: DID; uri: string; active: boolean; onClick?: () => void }) => {
 	const [feed] = createQuery({
 		key: () => getFeedGeneratorKey(props.uid, props.uri),
@@ -111,15 +113,25 @@ const AuthenticatedHome = () => {
 			<Title render="Home / Langit" />
 
 			<div
-				class="flex h-13 items-center px-4"
-				classList={{ 'sticky top-0 z-10 border-b border-divider bg-background': !pinnedFeeds() }}
+				class="flex h-13 items-center px-4 place-content-between"
+				classList={{ 'sticky top-0 z-10 border-b border-divider bg-background/70 backdrop-blur-md': !pinnedFeeds() }}
 			>
 				<p class="text-base font-bold">Home</p>
+				<Show when={isUpdateReady()}>
+					<button
+					onClick={() => {
+						updateSW();
+					}}
+					class="flex items-center gap-4 px-3 xl:px-4 py-1.5 xl:py-2 text-sm hover:bg-hinted rounded-full bg-primary hover:bg-primary/90 text-primary-fg font-bold"
+					>
+						<span>Update application</span>
+					</button>
+				</Show>
 			</div>
 
 			<Show when={pinnedFeeds()}>
 				<Suspense fallback={<hr class="-mt-px border-divider" />}>
-					<div class="sticky top-0 z-10 flex h-13 items-center overflow-x-auto border-b border-divider bg-background">
+					<div class="sticky top-0 z-10 flex h-10 xl:h-13 items-center overflow-x-auto border-b border-divider bg-background/70 backdrop-blur-md">
 						<Tab<'button'>
 							component="button"
 							active={!feed()}
