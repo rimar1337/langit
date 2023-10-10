@@ -209,7 +209,7 @@ const AuthenticatedLayout = () => {
 								<NotificationsIcon class="hidden text-3xl group-[.is-active]:block" />
 
 								<Show when={latestNotification() && !latestNotification()!.read}>
-									<div class="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
+									<div class="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-500" />
 								</Show>
 							</div>
 

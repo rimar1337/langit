@@ -131,7 +131,7 @@ const AuthenticatedHome = () => {
 
 			<Show when={pinnedFeeds()}>
 				<Suspense fallback={<hr class="-mt-px border-divider" />}>
-					<div class="sticky top-0 z-10 flex h-10 xl:h-13 items-center overflow-x-auto border-b border-divider bg-background/70 backdrop-blur-md">
+					<div class="sticky top-0 z-10 flex h-11 xl:h-13 items-center overflow-x-auto border-b border-divider bg-background/70 backdrop-blur-md">
 						<Tab<'button'>
 							component="button"
 							active={!feed()}

@@ -73,11 +73,11 @@ const EmbedImage = (props: EmbedImageProps) => {
 					<div class="flex aspect-video xl:gap-1 gap-0.5">
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
 							{render(0, false)}
-							{render(1, false)}
+							{render(2, false)}
 						</div>
 
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
-							{render(2, false)}
+							{render(1, false)}
 							{render(3, false)}
 						</div>
 					</div>
