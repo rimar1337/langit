@@ -24,10 +24,12 @@ const PostTranslation = (props: PostTranslationProps) => {
 		fetch: async (key) => {
 			const [, target = navigator.language, text] = key;
 
-			const url = new URL(`/api/translate`, location.href);
+			const url = new URL(
+				'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&dj=1&source=input',
+			);
 			url.searchParams.set('sl', 'auto');
 			url.searchParams.set('tl', target);
-			url.searchParams.set('text', text);
+			url.searchParams.set('q', text);
 
 			const response = await fetch(url);
 			const json = await response.json();
@@ -36,7 +38,12 @@ const PostTranslation = (props: PostTranslationProps) => {
 				throw new Error(`Received ${response.status}: ${json.state}`);
 			}
 
-			return json as TranslationResult;
+			return {
+				state: 'TRANSLATED',
+				result: json.sentences.map((n: any) => (n && n.trans) || '').join(''),
+				source: json.ld_result.srclangs,
+				raw: json,
+			} as TranslationResult;
 		},
 		staleTime: Infinity,
 	});

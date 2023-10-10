@@ -1,3 +1,5 @@
+/* no longer required probably i can probably delete this file outright */
+
 const json = (data: any, init?: number | ResponseInit) => {
 	const opts = typeof init === 'number' ? { status: init } : init;
 	const headers = new Headers(opts?.headers);
