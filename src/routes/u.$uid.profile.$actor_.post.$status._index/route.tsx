@@ -249,7 +249,7 @@ const AuthenticatedPostPage = () => {
 									}}
 								</Show>
 
-								<div ref={focusRef} class="scroll-m-16 px-3 lg-px-4 pt-3">
+								<div ref={focusRef} class="scroll-m-16 px-4 pt-3">
 									<div class="mb-1 flex items-center gap-3">
 										<a
 											link

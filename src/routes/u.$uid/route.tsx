@@ -1,4 +1,4 @@
-import { ErrorBoundary, Show, createEffect } from 'solid-js';
+import { ErrorBoundary, Show, createEffect, createSignal, onCleanup } from 'solid-js';
 
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 import { XRPCError } from '@intrnl/bluesky-client/xrpc-utils';
@@ -152,6 +152,37 @@ const AuthenticatedLayout = () => {
 		}
 	});
 
+	console.log(uid());
+
+	const whitelist = [
+		`/u/${uid()}`,
+		`/u/${uid()}/notifications`,
+		`/u/${uid()}/you`,
+		`/u/${uid()}/compose`,
+		`/u/${uid()}/explore`,
+	  ];
+	  
+	  const [isWhitelisted, setIsWhitelisted] = createSignal(false);
+	  
+	  function updateIsWhitelisted() {
+		setIsWhitelisted(
+		  whitelist.some((urlPattern) => {
+			const regex = new RegExp(urlPattern + '$'); // Add '$' to match the end of the string.
+			return regex.test(location.pathname);
+		  })
+		);
+	  }
+	  
+	  
+// Use createEffect to initially check the URL and update isWhitelisted
+createEffect(updateIsWhitelisted);
+
+// Use onCleanup to remove the effect when the component unmounts
+onCleanup(() => {
+  // Remove the effect
+  createEffect(() => {});
+});
+
 	return (
 		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center">
 			<Show when={isDesktop()}>
@@ -295,7 +326,7 @@ const AuthenticatedLayout = () => {
 			<div class="hidden basis-[30%] xl:block"></div>
 
 			<Show when={!isDesktop()}>
-				<div class="sticky bottom-0 z-30 flex h-13 border-t border-divider bg-background text-primary">
+				<div class={`sticky bottom-0 z-30 flex h-13 border-t border-divider bg-background text-primary ${isWhitelisted() ? '' : 'hidden'}`}>
 					<A
 						href={generatePath('/u/:uid', { uid: uid() })}
 						title="Home"

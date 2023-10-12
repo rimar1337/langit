@@ -11,6 +11,7 @@ import VisibilityIcon from '~/icons/baseline-visibility.tsx';
 
 import { LABELERS } from './types.ts';
 import AddLabelerDialog from './AddLabelerDialog.tsx';
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
 
 const AuthenticatedContentFilterModerationPage = () => {
 	const params = useParams('/u/:uid/you/moderation/content-filter');
@@ -26,11 +27,16 @@ const AuthenticatedContentFilterModerationPage = () => {
 		return LABELERS.filter((labeler) => $prefs[labeler.did]);
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<Title render={`Content filters / Langit`} />
 
 			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Content filters</p>
 			</div>
 

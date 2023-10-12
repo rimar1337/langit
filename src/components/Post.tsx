@@ -111,7 +111,7 @@ const Post = (props: PostProps) => {
 				'bg-accent/20': props.highlight,
 			}}
 		>
-			<div class="flex flex-col gap-1 pt-3">
+			<div class="flex flex-col gap-1 pt-2 md:pt-3">
 				<Show when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost'}>
 					<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 						<div class="flex w-10 shrink-0 justify-end">
@@ -199,7 +199,7 @@ const Post = (props: PostProps) => {
 					</Show>
 				</div>
 
-				<div class="min-w-0 grow pb-3">
+				<div class="min-w-0 grow pb-2 md:pb-3">
 					<div class="mb-0.5 flex items-center justify-between gap-4">
 						<div class="flex items-center text-[15px] leading-5">
 							<a
@@ -250,7 +250,7 @@ const Post = (props: PostProps) => {
 					<PostContent uid={uid} post={post} timelineDid={props.timelineDid} />
 
 					<Show when={interactive()}>
-						<div class="mt-3 flex text-muted-fg">
+						<div class="mt-2 md:mt-3 flex text-muted-fg">
 							<div class="flex grow basis-0 items-end gap-0.5">
 								<a class="group xl:hover:text-cyan-600/80 flex basis-0 items-end gap-0.5"
 									link

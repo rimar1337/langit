@@ -15,6 +15,7 @@ import { INTERACTION_TAGS, isElementAltClicked, isElementClicked } from '~/utils
 
 import CircularProgress from '~/components/CircularProgress.tsx';
 import VirtualContainer from '~/components/VirtualContainer.tsx';
+import ArrowLeftIcon from '~/icons/baseline-arrow-left';
 
 const AuthenticatedRepostFilterModerationPage = () => {
 	const params = useParams('/u/:uid/you/moderation/muted/temp');
@@ -28,11 +29,16 @@ const AuthenticatedRepostFilterModerationPage = () => {
 		return $prefs.pf_hideReposts || [];
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<Title render={`Hidden reposts / Langit`} />
 
 			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Hidden reposts</p>
 			</div>
 

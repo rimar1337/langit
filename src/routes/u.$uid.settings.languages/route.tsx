@@ -13,6 +13,7 @@ import AddIcon from '~/icons/baseline-add.tsx';
 import CheckBoxOutlineBlankIcon from '~/icons/baseline-check-box-outline-blank.tsx';
 import CheckBoxIcon from '~/icons/baseline-check-box.tsx';
 import DeleteIcon from '~/icons/baseline-delete.tsx';
+import ArrowLeftIcon from '~/icons/baseline-arrow-left';
 
 const Checkbox = (props: ComponentProps<'input'>) => {
 	return (
@@ -36,9 +37,14 @@ const AuthenticatedLanguagesSettingsPage = () => {
 		return getAccountPreferences(uid());
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<div class="sticky top-0 z-20 flex h-13 items-center border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Languages</p>
 			</div>
 

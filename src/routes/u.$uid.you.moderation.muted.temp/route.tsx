@@ -16,6 +16,7 @@ import * as relformat from '~/utils/intl/relformatter.ts';
 
 import CircularProgress from '~/components/CircularProgress.tsx';
 import VirtualContainer from '~/components/VirtualContainer.tsx';
+import ArrowLeftIcon from '~/icons/baseline-arrow-left';
 
 const AuthenticatedTempMutedUsersModerationPage = () => {
 	const params = useParams('/u/:uid/you/moderation/muted/temp');
@@ -48,11 +49,16 @@ const AuthenticatedTempMutedUsersModerationPage = () => {
 		return arr;
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col">
 			<Title render={`Temporarily muted users / Langit`} />
 
 			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Temporarily muted users</p>
 			</div>
 
