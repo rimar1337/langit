@@ -126,7 +126,7 @@ const TimelineList = (props: TimelineListProps) => {
 						<button
 							onClick={() => onLoadMore(cursor())}
 							disabled={timeline.loading}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
 						>
 							Show more posts
 						</button>

@@ -1,4 +1,4 @@
-import { type Accessor, Match, Show, Switch, createSignal } from 'solid-js';
+import { type Accessor, Match, Show, Switch, createSignal, createEffect } from 'solid-js';
 
 import type { DID, RefOf } from '@intrnl/bluesky-client/atp-schema';
 import { useNavigate } from '@solidjs/router';
@@ -27,6 +27,7 @@ import RepeatIcon from '~/icons/baseline-repeat.tsx';
 import ShareIcon from '~/icons/baseline-share.tsx';
 import ChatBubbleOutlinedIcon from '~/icons/outline-chat-bubble.tsx';
 import FavoriteOutlinedIcon from '~/icons/outline-favorite.tsx';
+import MoreVertIcon from '~/icons/baseline-more-vert';
 
 interface PostProps {
 	uid: DID;
@@ -78,6 +79,24 @@ const Post = (props: PostProps) => {
 			navigate(path);
 		}
 	};
+
+
+	const [isRedText, setIsRedText] = createSignal(false);
+
+	function handleButtonClick() {
+		let oldLikeValue = post().viewer.like.value;
+		// Add the red text class
+		setIsRedText(true)
+
+		favoritePost(uid(), post());
+
+		createEffect(() => {
+			if (post().viewer.like.value !== oldLikeValue) {
+				setIsRedText(false); // Reset the red text
+			}
+		});
+	}
+
 
 	return (
 		<div
@@ -174,13 +193,15 @@ const Post = (props: PostProps) => {
 					</a>
 
 					<Show when={props.next}>
+						<div class="mt-3 absolute top-11 border-l-2 border-divider w-[2px] h-3" />
 						<div class="mt-3 grow border-l-2 border-divider" />
+						<div class="mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
 					</Show>
 				</div>
 
 				<div class="min-w-0 grow pb-3">
 					<div class="mb-0.5 flex items-center justify-between gap-4">
-						<div class="flex items-center text-sm">
+						<div class="flex items-center text-[15px] leading-5">
 							<a
 								link
 								href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author().did })}
@@ -219,7 +240,8 @@ const Post = (props: PostProps) => {
 									}}
 									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg hover:bg-cyan-600/20 hover:text-cyan-600/80"
 								>
-									<MoreHorizIcon />
+									<MoreHorizIcon class="hidden md:block"/>
+									<MoreVertIcon class="block md:hidden"/>
 								</button>
 							</div>
 						</Show>
@@ -230,65 +252,70 @@ const Post = (props: PostProps) => {
 					<Show when={interactive()}>
 						<div class="mt-3 flex text-muted-fg">
 							<div class="flex grow basis-0 items-end gap-0.5">
-								<div class="group xl:hover:text-cyan-600/80 flex basis-0 items-end gap-0.5">
-									<a
-										link
-										href={
-											generatePath('/u/:uid/compose', { uid: uid() }) +
-											`?reply=${encodeURIComponent(post().uri)}`
-										}
+								<a class="group xl:hover:text-cyan-600/80 flex basis-0 items-end gap-0.5"
+									link
+									href={
+										generatePath('/u/:uid/compose', { uid: uid() }) +
+										`?reply=${encodeURIComponent(post().uri)}`
+									}>
+									<div
 										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover:bg-cyan-600/20"
 									>
 										<ChatBubbleOutlinedIcon />
-									</a>
+									</div>
 									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().replyCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().replyCount.value)}
 									</span>
 
-								</div>
+								</a>
 							</div>
 
 							<div
 								class="flex grow basis-0 items-end gap-0.5"
 								classList={{ 'text-green-600': !!post().viewer.repost.value }}
 							>
-								<div class="group xl:hover:text-green-600/80 flex basis-0 items-end gap-0.5">
-									<button
+								<button class="group xl:hover:text-green-600/80 flex basis-0 items-end gap-0.5"
+									onClick={() => {
+										openModal(() => <PostRepostMenu uid={uid()} post={post()} />);
+									}}>
+									<div
 										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover:bg-green-600/20"
-										onClick={() => {
-											openModal(() => <PostRepostMenu uid={uid()} post={post()} />);
-										}}
 									>
 										<RepeatIcon class="scale-110"/>
-									</button>
+									</div>
 									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().repostCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().repostCount.value)}
 									</span>
-								</div>
+								</button>
 							</div>
 
 							<div
 								class="group flex grow basis-0 items-end gap-0.5"
-								classList={{ 'is-active text-red-600': !!post().viewer.like.value }}
+								classList={{ 
+									'is-active text-red-600': !!post().viewer.like.value,
+									'text-red-500/70': isRedText(),
+								}}
 							>
-								<div class="group/wowza xl:hover:text-red-600/80 flex basis-0 items-end gap-0.5">
-									<button
+								<button class="group/wowza xl:hover:text-red-600/80 flex basis-0 items-end gap-0.5"
+									onClick={() => {
+										handleButtonClick();
+										}}>
+									<div
 										class="-my-1.5 -ml-2 flex h-8 w-8 items-center justify-center rounded-full text-base xl:group-hover/wowza:bg-red-600/20"
-										onClick={() => favoritePost(uid(), post())}
 									>
 										<FavoriteOutlinedIcon class="group-[.is-active]:hidden" />
 										<FavoriteIcon class="hidden group-[.is-active]:block" />
-									</button>
+									</div>
 									<span class="text-[0.8125rem] -ml-1 lg:ml-0" 
 										style={{ display: post().likeCount.value === 0 ? 'none' : 'inline' }}>
 									{comformat.format(post().likeCount.value)}
 									</span>
-								</div>
+								</button>
 							</div>
 
-							<div class="shrink-0">
+							<div class="shrink-0 pr-2 lg:pr-0">
 								<button
 									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 									onClick={() => {
@@ -366,7 +393,7 @@ const PostContent = ({ uid, post, force, timelineDid }: PostContentProps) => {
 				<div class="text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="whitespace-pre-wrap break-words text-sm">
+			<div class="whitespace-pre-wrap break-words text-[15px] font-normal leading-5">
 					
 				{post().$renderedContent()}
 			</div>

@@ -63,14 +63,13 @@ const ProfileTimeline = ({ uid, profile, tab }: ProfileTimelineProps) => {
 	}, 0 as const);
 
 	return (
-		<TimelineList
+		<><TimelineList
 			uid={uid()}
 			timeline={timeline}
 			latest={latest}
 			timelineDid={profile().did}
 			onLoadMore={(cursor) => refetch(true, cursor)}
-			onRefetch={() => refetch(true)}
-		/>
+			onRefetch={() => refetch(true)} /><div class=" border-t border-divider h-[30dvh]"></div></>
 	);
 };
 

@@ -86,13 +86,12 @@ const Feed = (props: { uid: DID; params: HomeTimelineParams | CustomTimelinePara
 	}, 0 as const);
 
 	return (
-		<TimelineList
+		<><TimelineList
 			uid={uid()}
 			timeline={timeline}
 			latest={latest}
 			onLoadMore={(cursor) => refetch(true, cursor)}
-			onRefetch={() => refetch(true)}
-		/>
+			onRefetch={() => refetch(true)} /><div class=" border-t border-divider h-[30dvh]"></div></>
 	);
 };
 

@@ -224,6 +224,7 @@ const AuthenticatedFeedPage = () => {
 					onLoadMore={(cursor) => refetch(true, cursor)}
 					onRefetch={() => refetch(true)}
 				/>
+				<div class=" border-t border-divider h-[30dvh]"></div>
 			</Show>
 		</div>
 	);

@@ -18,13 +18,12 @@ const SearchPosts = (props: SearchComponentProps) => {
 	});
 
 	return (
-		<TimelineList
+		<><TimelineList
 			uid={uid()}
 			timeline={posts}
 			onLoadMore={(cursor) => refetch(true, cursor)}
 			// This function doesn't need to be implemented as we're not passing a latest query
-			onRefetch={() => {}}
-		/>
+			onRefetch={() => { } } /><div class=" border-t border-divider h-[30dvh]"></div></>
 	);
 };
 
