@@ -195,11 +195,11 @@ const Post = (props: PostProps) => {
 					<Show when={props.next}>
 						<div class="mt-3 absolute top-11 border-l-2 border-divider w-[2px] h-3" />
 						<div class="mt-3 grow border-l-2 border-divider" />
-						<div class="mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
+						<div class="hidden md:block mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
 					</Show>
 				</div>
 
-				<div class="min-w-0 grow pb-2 md:pb-3">
+				<div class="min-w-0 grow pb-2.5 md:pb-3">
 					<div class="mb-0.5 flex items-center justify-between gap-4">
 						<div class="flex items-center text-[15px] leading-5">
 							<a
@@ -250,7 +250,7 @@ const Post = (props: PostProps) => {
 					<PostContent uid={uid} post={post} timelineDid={props.timelineDid} />
 
 					<Show when={interactive()}>
-						<div class="mt-2 md:mt-3 flex text-muted-fg">
+						<div class="mt-2.5 md:mt-3 flex text-muted-fg">
 							<div class="flex grow basis-0 items-end gap-0.5">
 								<a class="group xl:hover:text-cyan-600/80 flex basis-0 items-end gap-0.5"
 									link

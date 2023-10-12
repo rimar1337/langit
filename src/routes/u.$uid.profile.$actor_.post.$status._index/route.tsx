@@ -250,7 +250,7 @@ const AuthenticatedPostPage = () => {
 								</Show>
 
 								<div ref={focusRef} class="scroll-m-16 px-4 pt-3">
-									<div class="mb-1 flex items-center gap-3">
+									<div class="mb-1 flex items-center gap-3 -mx-1">
 										<a
 											link
 											href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author.did })}
@@ -289,13 +289,15 @@ const AuthenticatedPostPage = () => {
 											</button>
 										</div>
 									</div>
-
-									<PostContent
-										uid={uid}
-										post={post}
-										searchParams={searchParams}
-										onTranslate={() => setSearchParams({ tl: 'y' }, { replace: true })}
-									/>
+									
+									<div class="-mx-1">
+										<PostContent
+											uid={uid}
+											post={post}
+											searchParams={searchParams}
+											onTranslate={() => setSearchParams({ tl: 'y' }, { replace: true })}
+										/>
+									</div>
 
 									<Show
 										when={(() => {
@@ -306,7 +308,7 @@ const AuthenticatedPostPage = () => {
 										})()}
 									>
 										{(tags) => (
-											<div class="my-3 flex flex-wrap gap-2 text-sm">
+											<div class="my-3 flex flex-wrap gap-2 text-sm -mx-1">
 												<For each={tags()}>
 													{(tag) => (
 														<a
@@ -322,15 +324,15 @@ const AuthenticatedPostPage = () => {
 										)}
 									</Show>
 
-									<div class="my-3">
-										<span class="text-sm text-muted-fg">
+									<div class="my-3 -mx-1">
+										<span class="text-[14px] text-muted-fg">
 											{relformat.formatAbsWithTime(record().createdAt)}
 										</span>
 									</div>
 
 									<hr class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "border-divider"} />
 
-									<div class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "flex flex-wrap gap-4 py-3 text-sm"}>
+									<div class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "flex flex-wrap gap-4 py-3 text-sm -mx-1"}>
 										<a
 											link
 											href={post.repostCount.value === 0 ? undefined : generatePath('/u/:uid/profile/:actor/post/:status/reposts', params)}
@@ -459,7 +461,7 @@ const AuthenticatedPostPage = () => {
 															actor: getRepoId(items[len - 1].uri),
 															status: getRecordId(items[len - 1].uri),
 														})}
-														class="flex h-10 items-center gap-3 border-b border-divider px-4 hover:bg-hinted"
+														class="flex h-10 items-center gap-3 border-b border-divider px-3 hover:bg-hinted"
 													>
 														<div class="flex h-full w-10 justify-center">
 															<div class="mb-3 border-l-2 border-dashed border-divider" />

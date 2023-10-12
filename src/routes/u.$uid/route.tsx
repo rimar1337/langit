@@ -152,36 +152,28 @@ const AuthenticatedLayout = () => {
 		}
 	});
 
-	console.log(uid());
-
 	const whitelist = [
 		`/u/${uid()}`,
 		`/u/${uid()}/notifications`,
 		`/u/${uid()}/you`,
 		`/u/${uid()}/compose`,
 		`/u/${uid()}/explore`,
-	  ];
-	  
-	  const [isWhitelisted, setIsWhitelisted] = createSignal(false);
-	  
-	  function updateIsWhitelisted() {
-		setIsWhitelisted(
-		  whitelist.some((urlPattern) => {
-			const regex = new RegExp(urlPattern + '$'); // Add '$' to match the end of the string.
-			return regex.test(location.pathname);
-		  })
-		);
-	  }
-	  
-	  
-// Use createEffect to initially check the URL and update isWhitelisted
-createEffect(updateIsWhitelisted);
+	];
 
-// Use onCleanup to remove the effect when the component unmounts
-onCleanup(() => {
-  // Remove the effect
-  createEffect(() => {});
-});
+	const [isWhitelisted, setIsWhitelisted] = createSignal(false);
+
+	function updateIsWhitelisted() {
+		setIsWhitelisted(
+			whitelist.some((urlPattern) => {
+				const regex = new RegExp(urlPattern + '$');
+				return regex.test(location.pathname);
+			}),
+		);
+	}
+	createEffect(updateIsWhitelisted);
+	onCleanup(() => {
+		createEffect(() => {});
+	});
 
 	return (
 		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center">
