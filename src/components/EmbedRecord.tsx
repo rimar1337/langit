@@ -133,7 +133,7 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 				class="overflow-hidden rounded-2xl border border-divider"
 				classList={{ 'cursor-pointer hover:bg-secondary/30': interactive() }}
 			>
-				<div class="mx-3 mt-3 flex text-sm text-muted-fg">
+				<div class="mx-3 mt-3 flex text-[15px] font-normal leading-5 text-muted-fg">
 					<div class="mr-1 h-5 w-5 shrink-0 overflow-hidden rounded-full bg-muted-fg">
 						<Show when={author().avatar}>{(avatar) => <img src={avatar()} class="h-full w-full" />}</Show>
 					</div>
@@ -154,7 +154,7 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 							</div>
 						</Show>
 
-						<div class="mx-3 mb-3 mt-1 line-clamp-6 min-w-0 grow-4 basis-0 whitespace-pre-wrap break-words text-sm empty:hidden">
+						<div class="mx-3 mb-3 mt-1 line-clamp-6 min-w-0 grow-4 basis-0 whitespace-pre-wrap break-words text-[15px] font-normal leading-5 empty:hidden">
 							{(val() as PostRecord).text}
 						</div>
 					</div>

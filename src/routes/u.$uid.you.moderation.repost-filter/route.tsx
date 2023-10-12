@@ -95,7 +95,7 @@ const AuthenticatedRepostFilterModerationPage = () => {
 										tabindex={0}
 										class="flex gap-3 px-4 py-3 hover:bg-hinted"
 									>
-										<div class="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-muted-fg">
+										<div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted-fg">
 											<Show when={profile()?.avatar.value}>
 												{(avatar) => <img src={avatar()} class="h-full w-full" />}
 											</Show>
@@ -103,7 +103,7 @@ const AuthenticatedRepostFilterModerationPage = () => {
 
 										<div class="flex min-w-0 grow flex-col gap-1">
 											<div class="flex items-center justify-between gap-3">
-												<div class="flex flex-col text-sm">
+												<div class="flex flex-col text-[15px] font-normal leading-5">
 													<span class="line-clamp-1 break-all font-bold">
 														{profile()?.displayName.value || profile()?.handle.value}
 													</span>
@@ -112,7 +112,7 @@ const AuthenticatedRepostFilterModerationPage = () => {
 											</div>
 
 											<Show when={profile()?.description.value}>
-												<div class="line-clamp-3 break-words text-sm">
+												<div class="line-clamp-3 break-words text-[15px] font-normal leading-5">
 													{profile()?.$renderedDescription()}
 												</div>
 											</Show>

@@ -249,7 +249,7 @@ const AuthenticatedPostPage = () => {
 									}}
 								</Show>
 
-								<div ref={focusRef} class="scroll-m-16 px-4 pt-3">
+								<div ref={focusRef} class="scroll-m-16 px-3 lg-px-4 pt-3">
 									<div class="mb-1 flex items-center gap-3">
 										<a
 											link
@@ -266,10 +266,10 @@ const AuthenticatedPostPage = () => {
 											href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author.did })}
 											class="flex flex-col text-sm"
 										>
-											<span dir="auto" class="line-clamp-1 break-all font-bold hover:underline">
+											<span dir="auto" class="line-clamp-1 break-all hover:underline text-[15px] font-bold leading-5">
 												{author.displayName.value || author.handle.value}
 											</span>
-											<span class="line-clamp-1 break-all text-muted-fg">@{author.handle.value}</span>
+											<span class="line-clamp-1 break-all text-muted-fg text-[15px] font-normal leading-5">@{author.handle.value}</span>
 										</a>
 
 										<div class="flex shrink-0 grow justify-end">
@@ -475,6 +475,7 @@ const AuthenticatedPostPage = () => {
 								<div class="flex h-13 items-center justify-center">
 									<span class="text-sm text-muted-fg">End of thread</span>
 								</div>
+								<div class="h-[30dvh]"></div>
 							</>
 						);
 					}}
@@ -569,7 +570,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 				<div class="mt-3 text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="mt-3 whitespace-pre-wrap break-words text-base empty:hidden">{post.$renderedContent()}</div>
+			<div class="mt-3 whitespace-pre-wrap break-words text-[17px] font-normal leading-6 empty:hidden">{post.$renderedContent()}</div>
 
 			<Switch>
 				<Match when={searchParams.tl === 'y'}>

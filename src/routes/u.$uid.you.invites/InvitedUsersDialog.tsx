@@ -70,7 +70,7 @@ const InvitedUsersDialog = (props: InvitedUsersDialogProps) => {
 										}}
 										class="flex gap-3 px-4 py-3 hover:bg-hinted"
 									>
-										<div class="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-muted-fg">
+										<div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted-fg">
 											<Show when={profile()?.avatar.value}>
 												{(avatar) => <img src={avatar()} class="h-full w-full" />}
 											</Show>

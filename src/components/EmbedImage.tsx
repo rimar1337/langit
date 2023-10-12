@@ -107,7 +107,11 @@ const EmbedImage = (props: EmbedImageProps) => {
 					</div>
 				</Match>
 
-				<Match when={images().length === 1}>{render(0, true)}</Match>
+				<Match when={images().length === 1}>
+					<div class="flex max-h-[50vh]">
+						{render(0, true)}
+					</div>
+					</Match>
 			</Switch>
 		</div>
 	);

@@ -27,6 +27,8 @@ import VisibilityIcon from '~/icons/baseline-visibility.tsx';
 import AccountActionMenu from './AccountActionMenu.tsx';
 import AppThemeMenu from './AppThemeMenu.tsx';
 
+import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+
 const GIT_SOURCE = import.meta.env.VITE_GIT_SOURCE;
 
 const GIT_BRANCH = import.meta.env.VITE_GIT_BRANCH;
@@ -50,9 +52,14 @@ const AuthenticatedYouPage = () => {
 		return session ? session.isAppPassword !== false : true;
 	});
 
+	const handleGoBack = () => {
+		window.history.go(-1); // Go back one step in browser history
+	};
+
 	return (
 		<div class="flex flex-col pb-4">
 			<div class="flex h-13 items-center px-4">
+				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<p class="text-base font-bold">Signed in as</p>
 			</div>
 
@@ -84,7 +91,7 @@ const AuthenticatedYouPage = () => {
 								onKeyDown={handleClick}
 								class="group flex cursor-pointer items-center gap-4 px-4 py-3 text-left hover:bg-hinted"
 							>
-								<div class="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-muted-fg">
+								<div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted-fg">
 									<Show when={profile?.avatar}>
 										{(avatar) => <img src={avatar()} class="h-full w-full" />}
 									</Show>
@@ -266,7 +273,9 @@ const AuthenticatedYouPage = () => {
 					</a>
 				</p>
 			)}
-			<span class="font-normal text-center text-xs text-muted-fg">Langit (skye-puce fork)</span>
+			<p class="mt-4 border-t border-divider pt-4 text-center text-xs text-muted-fg">
+				<a class="font-normal text-center text-xs text-muted-fg" href="https://github.com/rimar1337/langit">Langit (skye-puce fork)</a>
+			</p>
 		</div>
 	);
 };

@@ -60,7 +60,7 @@ const AuthenticatedSearchPage = () => {
 					/>
 				</div>
 
-				<div class="flex h-10 xl:h-13 overflow-x-auto border-b border-divider">
+				<div class="flex h-11 xl:h-13 overflow-x-auto border-b border-divider">
 					<Tab
 						component="button"
 						active={type() === SearchType.POSTS}

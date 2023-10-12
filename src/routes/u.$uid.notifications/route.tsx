@@ -187,7 +187,7 @@ const AuthenticatedNotificationsPage = () => {
 						<button
 							onClick={() => refetch(true, cursor())}
 							disabled={notifications.loading}
-							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none mb-8"
+							class="flex h-13 items-center justify-center text-sm text-accent hover:bg-hinted disabled:pointer-events-none"
 						>
 							Show more notifications
 						</button>

@@ -216,7 +216,7 @@ const AuthenticatedProfileLayout = () => {
 										<p dir="auto" class="line-clamp-1 break-all text-xl font-bold">
 											{profile().displayName.value || profile().handle.value}
 										</p>
-										<p class="flex items-center text-sm text-muted-fg">
+										<p class="flex items-center text-sm text-muted-fg text-[15px] font-normal leading-5">
 											<button
 												onClick={() => {
 													openModal(() => <ProfileIdentifierDialog profile={profile()} />);
@@ -235,7 +235,7 @@ const AuthenticatedProfileLayout = () => {
 									</div>
 
 									<Show when={profile().description.value}>
-										<div class="whitespace-pre-wrap break-words text-sm">
+										<div class="whitespace-pre-wrap break-words text-[15px] font-normal leading-5">
 											{profile().$renderedDescription()}
 										</div>
 									</Show>
@@ -347,7 +347,7 @@ const AuthenticatedProfileLayout = () => {
 									</Match>
 
 									<Match when>
-										<div class="flex h-10 xl:h-13 overflow-x-auto border-b border-divider">
+										<div class="flex h-11 xl:h-13 overflow-x-auto border-b border-divider">
 											<TabLink href={generatePath('/u/:uid/profile/:actor', params)} replace end>
 												Posts
 											</TabLink>

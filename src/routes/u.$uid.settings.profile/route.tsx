@@ -180,7 +180,7 @@ const AuthenticatedProfileSettingsPage = () => {
 									<textarea
 										ref={model(bio, setBio)}
 										id={'bio' + id}
-										rows={5}
+										rows={10}
 										maxLength={MAX_BIO_LENGTH}
 										class={/* @once */ textarea()}
 									/>
