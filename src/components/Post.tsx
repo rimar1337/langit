@@ -111,7 +111,7 @@ const Post = (props: PostProps) => {
 				'bg-accent/20': props.highlight,
 			}}
 		>
-			<div class="flex flex-col gap-1 pt-2 md:pt-3">
+			<div class="flex flex-col gap-1 pt-3">
 				<Show when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost'}>
 					<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 						<div class="flex w-10 shrink-0 justify-end">
@@ -238,7 +238,7 @@ const Post = (props: PostProps) => {
 											<PostMenu uid={uid()} post={post()} onTranslate={(ev) => handleClick(ev, true)} />
 										));
 									}}
-									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg hover:bg-cyan-600/20 hover:text-cyan-600/80"
+									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base text-muted-fg/80 md:text-muted-fg hover:bg-cyan-600/20 hover:text-cyan-600/80"
 								>
 									<MoreHorizIcon class="hidden md:block"/>
 									<MoreVertIcon class="block md:hidden"/>
@@ -315,7 +315,7 @@ const Post = (props: PostProps) => {
 								</button>
 							</div>
 
-							<div class="shrink-0 pr-2 lg:pr-0">
+							<div class="shrink-0 pr-3 lg:pr-0">
 								<button
 									class="-mx-2 -my-1.5 flex h-8 w-8 items-center justify-center rounded-full text-base xl:hover:bg-cyan-600/20 xl:hover:text-cyan-600/80"
 									onClick={() => {

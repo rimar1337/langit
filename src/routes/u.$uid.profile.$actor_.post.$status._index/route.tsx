@@ -250,7 +250,7 @@ const AuthenticatedPostPage = () => {
 								</Show>
 
 								<div ref={focusRef} class="scroll-m-16 px-4 pt-3">
-									<div class="mb-1 flex items-center gap-3 -mx-1">
+									<div class="mb-1 flex items-center gap-3 -mx-1 md:mx-0">
 										<a
 											link
 											href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author.did })}
@@ -266,10 +266,10 @@ const AuthenticatedPostPage = () => {
 											href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author.did })}
 											class="flex flex-col text-sm"
 										>
-											<span dir="auto" class="line-clamp-1 break-all hover:underline text-[15px] font-bold leading-5">
+											<span dir="auto" class="line-clamp-1 break-all hover:underline text-[15px] font-bold leading-4.5">
 												{author.displayName.value || author.handle.value}
 											</span>
-											<span class="line-clamp-1 break-all text-muted-fg text-[15px] font-normal leading-5">@{author.handle.value}</span>
+											<span class="line-clamp-1 break-all text-muted-fg text-[15px] font-normal leading-4">@{author.handle.value}</span>
 										</a>
 
 										<div class="flex shrink-0 grow justify-end">
@@ -290,7 +290,7 @@ const AuthenticatedPostPage = () => {
 										</div>
 									</div>
 									
-									<div class="-mx-1">
+									<div class="-mx-1 md:mx-0">
 										<PostContent
 											uid={uid}
 											post={post}
@@ -308,7 +308,7 @@ const AuthenticatedPostPage = () => {
 										})()}
 									>
 										{(tags) => (
-											<div class="my-3 flex flex-wrap gap-2 text-sm -mx-1">
+											<div class="my-3 flex flex-wrap gap-2 text-sm -mx-1 md:mx-0">
 												<For each={tags()}>
 													{(tag) => (
 														<a
@@ -324,7 +324,7 @@ const AuthenticatedPostPage = () => {
 										)}
 									</Show>
 
-									<div class="my-3 -mx-1">
+									<div class="my-3 -mx-1 md:mx-0">
 										<span class="text-[14px] text-muted-fg">
 											{relformat.formatAbsWithTime(record().createdAt)}
 										</span>
@@ -332,7 +332,7 @@ const AuthenticatedPostPage = () => {
 
 									<hr class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "border-divider"} />
 
-									<div class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "flex flex-wrap gap-4 py-3 text-sm -mx-1"}>
+									<div class={post.repostCount.value === 0 && post.likeCount.value === 0 ? "hidden" : "flex flex-wrap gap-4 py-3 text-sm -mx-1 md:mx-0"}>
 										<a
 											link
 											href={post.repostCount.value === 0 ? undefined : generatePath('/u/:uid/profile/:actor/post/:status/reposts', params)}
@@ -572,7 +572,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 				<div class="mt-3 text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="mt-3 whitespace-pre-wrap break-words text-[17px] font-normal leading-6 empty:hidden">{post.$renderedContent()}</div>
+			<div class="mt-2 md:mt-3 whitespace-pre-wrap break-words text-[19px] md:text-[17px] font-normal leading-[25px] md:leading-6 empty:hidden">{post.$renderedContent()}</div>
 
 			<Switch>
 				<Match when={searchParams.tl === 'y'}>
