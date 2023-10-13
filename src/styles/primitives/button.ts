@@ -12,7 +12,7 @@ const button = (props: ButtonProps = {}) => {
 	if (size === 'xs') {
 		cn += ` h-8 px-4 leading-none`;
 	} else if (size === 'sm') {
-		cn += ` h-9 px-4`;
+		cn += ` h-8 xl:h-9 px-4`;
 	}
 
 	if (color === 'primary') {

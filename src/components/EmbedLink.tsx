@@ -52,7 +52,7 @@ const EmbedLink = (props: EmbedLinkProps) => {
 				</div>
 			</Show>
 
-			<div class="flex min-w-0 flex-col justify-center gap-0.5 p-3 text-[15px] font-normal leading-5 max-h-[120px]">
+			<div class="flex min-w-0 flex-col justify-center gap-0.5 p-3 text-sm max-h-[120px]">
 				<p class="text-muted-fg">{getDomain(link().uri)}</p>
 				<p class="line-clamp-1 empty:hidden">{link().title}</p>
 

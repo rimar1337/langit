@@ -572,7 +572,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 				<div class="mt-3 text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="mt-2 md:mt-3 whitespace-pre-wrap break-words text-[19px] md:text-[17px] font-normal leading-[25px] md:leading-6 empty:hidden">{post.$renderedContent()}</div>
+			<div class="mt-2 md:mt-3 whitespace-pre-wrap break-words text-[18px] md:text-[17px] font-normal leading-[25px] md:leading-6 empty:hidden">{post.$renderedContent()}</div>
 
 			<Switch>
 				<Match when={searchParams.tl === 'y'}>
@@ -626,5 +626,5 @@ const PostEmbedContent = ({ uid, mod, embed, force }: PostEmbedContentProps) => 
 		);
 	}
 
-	return <Embed uid={uid()} embed={embed()} large />;
+	return <Embed uid={uid()} embed={embed()} large/>;
 };

@@ -79,7 +79,7 @@ const AuthenticatedProfileLayout = () => {
 				<Switch>
 					<Match when={profile()}>
 						{(profile) => (
-							<div class="flex flex-col gap-0.5">
+							<div class="flex flex-col gap-0.5" style=" max-width: calc(100% - 150px);">
 								<Title
 									render={() => {
 										const $profile = profile();
@@ -141,20 +141,61 @@ const AuthenticatedProfileLayout = () => {
 									fallback={<div class="aspect-banner bg-muted-fg"></div>}
 								>
 									{(banner) => (
-										<button
-											onClick={() => {
-												const imageViewerComponent = () => <LazyImageViewerDialog images={[{ fullsize: banner }]} />;
-												openModal(() => {
-												  history.pushState({ modal: true }, '');
-												  return imageViewerComponent();
-												});
-											}}
-											class="aspect-banner bg-background"
-										>
-											<img src={banner} class="h-full w-full object-cover" />
-										</button>
+										<>
+											<button
+												onClick={() => {
+													const imageViewerComponent = () => (
+														<LazyImageViewerDialog images={[{ fullsize: banner }]} />
+													);
+													openModal(() => {
+														history.pushState({ modal: true }, '');
+														return imageViewerComponent();
+													});
+												}}
+												class="hidden aspect-banner bg-background md:block"
+											>
+												<img src={banner} class="h-full w-full object-cover" />
+											</button>
+
+											<button
+												onClick={() => {
+													const imageViewerComponent = () => (
+														<LazyImageViewerDialog images={[{ fullsize: banner }]} />
+													);
+													openModal(() => {
+														history.pushState({ modal: true }, '');
+														return imageViewerComponent();
+													});
+												}}
+												class="sticky z-10 aspect-banner bg-background sm:hidden"
+												style=" top: calc(-100vw/3 + 52px)"
+											>
+												<img src={banner} class="h-full w-full object-cover" />
+											</button>
+										</>
 									)}
 								</Show>
+
+								<div class="pointer-events-none sticky top-0.5 z-30 -mb-[36px] mr-4 flex translate-y-2 flex-row-reverse md:hidden">
+									<div class="pointer-events-auto">
+										<Switch>
+											<Match when={profile().did === uid()}>
+												<a
+													link
+													href={generatePath('/u/:uid/settings/profile', params)}
+													class={/* @once */ button({ color: 'outline' })}
+												>
+													Edit profile
+												</a>
+											</Match>
+											<Match when>
+												<Show when={!profile().viewer.blocking.value && !profile().viewer.blockedBy.value}>
+													<FollowButton uid={uid()} profile={profile()} />
+												</Show>
+											</Match>
+										</Switch>
+									</div>
+								</div>
 
 								<div class="z-10 flex flex-col gap-3 px-4 py-3">
 									<div class="flex gap-2">
@@ -168,13 +209,15 @@ const AuthenticatedProfileLayout = () => {
 											{(avatar) => (
 												<button
 													onClick={() => {
-														const imageViewerComponent = () => <LazyImageViewerDialog images={[{ fullsize: avatar }]} />;
+														const imageViewerComponent = () => (
+															<LazyImageViewerDialog images={[{ fullsize: avatar }]} />
+														);
 														openModal(() => {
-														  history.pushState({ modal: true }, '');
-														  return imageViewerComponent();
+															history.pushState({ modal: true }, '');
+															return imageViewerComponent();
 														});
 													}}
-													class="-mt-11 h-20 w-20 xl:h-32 xl:w-32 xl:-mt-20 shrink-0 overflow-hidden rounded-full bg-background outline-4 outline-background outline focus-visible:outline-primary"
+													class="-mt-11 h-20 w-20 shrink-0 overflow-hidden rounded-full bg-background outline-4 outline-background outline focus-visible:outline-primary xl:-mt-20 xl:h-32 xl:w-32"
 												>
 													<img src={avatar} class="h-full w-full" />
 												</button>
@@ -216,7 +259,7 @@ const AuthenticatedProfileLayout = () => {
 										<p dir="auto" class="line-clamp-1 break-all text-xl font-bold">
 											{profile().displayName.value || profile().handle.value}
 										</p>
-										<p class="flex items-center text-sm text-muted-fg text-[15px] font-normal leading-5">
+										<p class="flex items-center text-[15px] text-sm font-normal leading-5 text-muted-fg">
 											<button
 												onClick={() => {
 													openModal(() => <ProfileIdentifierDialog profile={profile()} />);
@@ -235,7 +278,7 @@ const AuthenticatedProfileLayout = () => {
 									</div>
 
 									<Show when={profile().description.value}>
-										<div class="whitespace-pre-wrap break-words text-[15px] font-normal leading-5">
+										<div class="whitespace-pre-wrap break-words text-sm">
 											{profile().$renderedDescription()}
 										</div>
 									</Show>
@@ -347,7 +390,7 @@ const AuthenticatedProfileLayout = () => {
 									</Match>
 
 									<Match when>
-										<div class="flex h-11 xl:h-13 overflow-x-auto border-b border-divider">
+										<div class="sticky top-[52px] z-10 flex h-11 overflow-x-auto border-b border-divider bg-background md:top-auto md:flex xl:h-13">
 											<TabLink href={generatePath('/u/:uid/profile/:actor', params)} replace end>
 												Posts
 											</TabLink>

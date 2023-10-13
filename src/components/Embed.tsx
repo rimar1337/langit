@@ -60,7 +60,7 @@ const Embed = (props: EmbedProps) => {
 	});
 
 	return (
-		<div class="mt-4 md:mt-3 flex flex-col gap-3">
+		<div class="mt-3 flex flex-col gap-3">
 			<Show when={val().link}>{(link) => <EmbedLink link={link()} interactive />}</Show>
 
 			<Show when={val().images}>{(images) => <EmbedImage images={images()} interactive />}</Show>

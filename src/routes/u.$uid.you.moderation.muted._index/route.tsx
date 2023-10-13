@@ -157,7 +157,7 @@ const AuthenticatedMutedUsersModerationPage = () => {
 
 									<div class="flex min-w-0 grow flex-col gap-1">
 										<div class="flex items-center justify-between gap-3">
-											<div class="flex flex-col text-[15px] font-normal leading-5">
+											<div class="flex flex-col text-sm">
 												<span dir="auto" class="line-clamp-1 break-all font-bold">
 													{profile.displayName.value || profile.handle.value}
 												</span>
@@ -182,7 +182,7 @@ const AuthenticatedMutedUsersModerationPage = () => {
 										</div>
 
 										<Show when={profile.description.value}>
-											<div class="line-clamp-3 break-words text-[15px] font-normal leading-5">{profile.$renderedDescription()}</div>
+											<div class="line-clamp-3 break-words text-sm">{profile.$renderedDescription()}</div>
 										</Show>
 									</div>
 								</div>

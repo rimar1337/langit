@@ -6,10 +6,6 @@ export default {
 	content: ['./src/**/*.{ts,tsx}'],
 	theme: {
 		extend: {
-			fontSize: {
-				'sm': ['15px', '20px'],
-				'base': ['17px', '24px'],
-			  },
 			spacing: {
 				7.5: '1.875rem',
 				13: '3.25rem',

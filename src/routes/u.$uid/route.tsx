@@ -34,6 +34,8 @@ import InvalidSessionNoticeDialog from './InvalidSessionNoticeDialog.tsx';
 
 import { isUpdateReady, updateSW } from '~/utils/service-worker.ts';
 import AddIcon from '~/icons/baseline-add.tsx';
+import SearchInput from '~/components/SearchInput.tsx';
+import { useNavigate } from '@solidjs/router';
 
 const handleError = (error: any, reset: () => void) => {
 	const parseFileName = (file: string) => {
@@ -175,8 +177,10 @@ const AuthenticatedLayout = () => {
 		createEffect(() => {});
 	});
 
+	const navigate = useNavigate();
+
 	return (
-		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center">
+		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center xl:-translate-x-14">
 			<Show when={isDesktop()}>
 				<div class="sticky top-0 flex h-screen flex-col items-end xl:basis-[30%]">
 					<div class="flex grow flex-col gap-1 p-2 lg:p-4 xl:w-64">
@@ -315,7 +319,20 @@ const AuthenticatedLayout = () => {
 				</ErrorBoundary>
 			</div>
 
-			<div class="hidden basis-[30%] xl:block"></div>
+			<div class="hidden xl:flex sticky top-0 h-screen flex-col xl:basis-[30%]">
+				<div class="ml-4 mt-2 w-[70%]">
+					<SearchInput
+						onEnter={(next) => {
+							if (next.trim()) {
+								const path =
+									generatePath('/u/:uid/explore/search', { uid: uid() }) +
+									`?t=user&q=${encodeURIComponent(next)}`;
+								navigate(path);
+							}
+						}}
+					/>
+				</div>
+			</div>
 
 			<Show when={!isDesktop()}>
 				<div class={`sticky bottom-0 z-30 flex h-13 border-t border-divider bg-background text-primary ${isWhitelisted() ? '' : 'hidden'}`}>

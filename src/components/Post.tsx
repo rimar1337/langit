@@ -195,7 +195,7 @@ const Post = (props: PostProps) => {
 					<Show when={props.next}>
 						<div class="mt-3 absolute top-11 border-l-2 border-divider w-[2px] h-3" />
 						<div class="mt-3 grow border-l-2 border-divider" />
-						<div class="hidden md:block mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
+						<div class="mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
 					</Show>
 				</div>
 
@@ -393,7 +393,7 @@ const PostContent = ({ uid, post, force, timelineDid }: PostContentProps) => {
 				<div class="text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="whitespace-pre-wrap break-words text-[15px] font-normal leading-5">
+			<div class="whitespace-pre-wrap break-words text-sm">
 					
 				{post().$renderedContent()}
 			</div>
