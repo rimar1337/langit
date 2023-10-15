@@ -266,10 +266,10 @@ const AuthenticatedPostPage = () => {
 											href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author.did })}
 											class="flex flex-col text-sm"
 										>
-											<span dir="auto" class="line-clamp-1 break-all hover:underline text-[15px] font-bold leading-4.5">
+											<span dir="auto" class="line-clamp-1 break-all hover:underline text-[15px] font-bold">
 												{author.displayName.value || author.handle.value}
 											</span>
-											<span class="line-clamp-1 break-all text-muted-fg text-[15px] font-normal leading-4">@{author.handle.value}</span>
+											<span class="line-clamp-1 break-all text-muted-fg text-[15px] font-normal">@{author.handle.value}</span>
 										</a>
 
 										<div class="flex shrink-0 grow justify-end">
@@ -572,7 +572,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 				<div class="mt-3 text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="mt-2 md:mt-3 whitespace-pre-wrap break-words text-[18px] md:text-[17px] font-normal leading-[25px] md:leading-6 empty:hidden">{post.$renderedContent()}</div>
+			<div class="mt-2 md:mt-3 whitespace-pre-wrap break-words text-[17px] font-normal leading-[25px] md:leading-6 empty:hidden">{post.$renderedContent()}</div>
 
 			<Switch>
 				<Match when={searchParams.tl === 'y'}>

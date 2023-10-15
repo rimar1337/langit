@@ -28,6 +28,7 @@ import ShareIcon from '~/icons/baseline-share.tsx';
 import ChatBubbleOutlinedIcon from '~/icons/outline-chat-bubble.tsx';
 import FavoriteOutlinedIcon from '~/icons/outline-favorite.tsx';
 import MoreVertIcon from '~/icons/baseline-more-vert';
+import ReplyIcon from '~/icons/baseline-reply';
 
 interface PostProps {
 	uid: DID;
@@ -112,27 +113,27 @@ const Post = (props: PostProps) => {
 			}}
 		>
 			<div class="flex flex-col gap-1 pt-3">
-				<Show when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost'}>
-					<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
-						<div class="flex w-10 shrink-0 justify-end">
-							<RepeatIcon class="h-4 w-4"/>
-						</div>
-						<div class="min-w-0">
-							<a
-								link
-								href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: reason()!.by.did })}
-								class="flex font-medium hover:underline"
-							>
-								<span dir="auto" class="line-clamp-1 break-all font-bold">
-									{reason()!.by.displayName || reason()!.by.handle}
-								</span>
-								<span class="whitespace-pre font-bold"> Reposted</span>
-							</a>
-						</div>
-					</div>
-				</Show>
-
 				<Switch>
+					<Match when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost'}>
+						<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
+							<div class="flex w-10 shrink-0 justify-end">
+								<RepeatIcon class="h-4 w-4"/>
+							</div>
+							<div class="min-w-0">
+								<a
+									link
+									href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: reason()!.by.did })}
+									class="flex font-medium hover:underline"
+								>
+									<span dir="auto" class="line-clamp-1 break-all font-bold">
+										{reason()!.by.displayName || reason()!.by.handle}
+									</span>
+									<span class="whitespace-pre font-bold"> Reposted</span>
+								</a>
+							</div>
+						</div>
+					</Match>
+
 					<Match when={!prev() && parent()}>
 						<div class="-mt-1 mb-1 flex items-center gap-3 text-[0.8125rem] text-muted-fg">
 							<div class="flex w-10 shrink-0 justify-end">
@@ -193,9 +194,10 @@ const Post = (props: PostProps) => {
 					</a>
 
 					<Show when={props.next}>
-						<div class="mt-3 absolute top-11 border-l-2 border-divider w-[2px] h-3" />
-						<div class="mt-3 grow border-l-2 border-divider" />
-						<div class="mt-3 absolute -bottom-2 border-l-2 border-divider w-[2px] h-3" />
+						<div class="mt-3 grow border-l-2 border-divider">
+							<div class="absolute -translate-y-2 -translate-x-0.5 border-l-2 border-divider w-[2px] h-3" />
+							<div class="absolute -bottom-2 -translate-x-0.5 border-l-2 border-divider w-[2px] h-3" />
+						</div>
 					</Show>
 				</div>
 
@@ -246,6 +248,29 @@ const Post = (props: PostProps) => {
 							</div>
 						</Show>
 					</div>
+					<Show when={reason() && reason()!.$type === 'app.bsky.feed.defs#reasonRepost' && !prev() && parent()}>
+						<div class="flex items-center gap-1 text-[0.8125rem] text-muted-fg">
+							<div>
+								<ReplyIcon class="h-4 w-4"/>
+							</div>
+							<div class="min-w-0">
+								<a
+									link
+									href={generatePath('/u/:uid/profile/:actor/post/:status', {
+										uid: uid(),
+										actor: parent()!.author.did,
+										status: getRecordId(parent()!.uri),
+									})}
+									class="flex font-medium hover:underline"
+								>
+									<span class="whitespace-pre font-normal">Replying to </span>
+									<span dir="auto" class="line-clamp-1 font-normal">
+										{parent()!.author.displayName.value || parent()!.author.handle.value}
+									</span>
+								</a>
+							</div>
+						</div>
+					</Show>
 
 					<PostContent uid={uid} post={post} timelineDid={props.timelineDid} />
 
@@ -393,7 +418,7 @@ const PostContent = ({ uid, post, force, timelineDid }: PostContentProps) => {
 				<div class="text-sm text-muted-fg">This post has been deleted.</div>
 			</Show>
 
-			<div class="whitespace-pre-wrap break-words text-sm">
+			<div class="whitespace-pre-wrap break-words text-sm md:text-[15px] font-normal leading-5">
 					
 				{post().$renderedContent()}
 			</div>

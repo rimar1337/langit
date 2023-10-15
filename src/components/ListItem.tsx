@@ -44,7 +44,7 @@ const ListItem = (props: ListItemProps) => {
 				list: getRecordId(list().uri),
 			})}
 			onClick={props.onClick}
-			class="flex gap-3 px-4 py-3 hover:bg-hinted"
+			class="flex gap-3 px-3 lg:px-4 py-3 hover:bg-hinted"
 		>
 			<div class="mt-0.5 h-9 w-9 shrink-0 overflow-hidden rounded-md bg-muted-fg">
 				<Show when={list().avatar.value}>{(avatar) => <img src={avatar()} class="h-full w-full" />}</Show>

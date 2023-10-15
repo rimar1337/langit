@@ -69,17 +69,20 @@ const AuthenticatedExplorePage = () => {
 
 			<div class="sticky top-0 z-20 flex h-13 items-center gap-2 border-b border-divider bg-background px-4">
 				<button onClick={handleGoBack} class="text-base font-bold p-3 -ml-3"><ArrowLeftIcon/></button>
-				<SearchInput
-					onEnter={(next) => {
-						if (next.trim()) {
-							const path =
-								generatePath('/u/:uid/explore/search', { uid: uid() }) +
-								`?t=user&q=${encodeURIComponent(next)}`;
+					<div class="block xl:hidden grow">
+					<SearchInput
+						onEnter={(next) => {
+							if (next.trim()) {
+								const path =
+									generatePath('/u/:uid/explore/search', { uid: uid() }) +
+									`?t=user&q=${encodeURIComponent(next)}`;
 
-							navigate(path);
-						}
-					}}
-				/>
+								navigate(path);
+							}
+						}}
+					/>
+					</div>
+					<div class="hidden xl:block text-base font-bold mr-auto"> Explore </div>
 
 				<Show when={savedFeeds()}>
 					<button

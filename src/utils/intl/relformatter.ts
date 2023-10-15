@@ -19,7 +19,7 @@ export const format = (time: string | number, base = new Date()) => {
 	const num = date.getTime();
 	const delta = Math.abs(num - base.getTime());
 
-	if (delta > WEEK) {
+	if (delta > MONTH) {
 		return absFormat.format(date);
 	}
 

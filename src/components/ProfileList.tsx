@@ -62,7 +62,7 @@ const ProfileList = (props: ProfileListProps) => {
 									onKeyDown={handleClick}
 									role="button"
 									tabindex={0}
-									class="flex gap-3 px-4 py-3 hover:bg-hinted"
+									class="flex gap-3 px-3 lg:px-4 py-3 hover:bg-hinted"
 								>
 									<div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-muted-fg">
 										<Show when={profile.avatar.value}>

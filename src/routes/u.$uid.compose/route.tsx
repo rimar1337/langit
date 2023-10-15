@@ -4,6 +4,7 @@ import type { AtBlob, DID, Records, RefOf, UnionOf } from '@intrnl/bluesky-clien
 import { createQuery } from '@intrnl/sq';
 import { useBeforeLeave, useSearchParams } from '@solidjs/router';
 
+import TextareaAutosize from 'solid-textarea-autosize';
 
 import { createPost } from '~/api/mutations/create-post.ts';
 import { uploadBlob } from '~/api/mutations/upload-blob.ts';
@@ -30,6 +31,7 @@ import { compressPostImage } from '~/utils/image.ts';
 import { languageNames } from '~/utils/intl/displaynames.ts';
 import { isAtpFeedUri, isAtpPostUri, isBskyFeedUrl, isBskyPostUrl } from '~/utils/link.ts';
 import { Title } from '~/utils/meta.tsx';
+import { model } from '~/utils/misc.ts';
 import { signal } from '~/utils/signals.ts';
 
 import BlobImage from '~/components/BlobImage.tsx';
@@ -471,7 +473,7 @@ const AuthenticatedComposePage = () => {
 
 			<div class="sticky top-0 z-10 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
 				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
-				<p class="text-base font-bold">Compose</p>
+			<p class="text-base font-bold">Compose</p>
 			</div>
 
 			<input

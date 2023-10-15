@@ -179,6 +179,27 @@ const AuthenticatedLayout = () => {
 
 	const navigate = useNavigate();
 
+
+
+
+	
+	const searchboxWhitelist = [
+		`/u/${uid()}/explore/search`,
+	];
+	const [isSearchboxWhitelisted, setIsSearchboxWhitelisted] = createSignal(false);
+	function updateIsSearchboxWhitelisted() {
+		setIsSearchboxWhitelisted(
+			searchboxWhitelist.some((urlPattern) => {
+				const regex = new RegExp(urlPattern + '$');
+				return regex.test(location.pathname);
+			}),
+		);
+	}
+	createEffect(updateIsSearchboxWhitelisted);
+	onCleanup(() => {
+		createEffect(() => {});
+	});
+
 	return (
 		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center xl:-translate-x-14">
 			<Show when={isDesktop()}>
@@ -320,7 +341,7 @@ const AuthenticatedLayout = () => {
 			</div>
 
 			<div class="hidden xl:flex sticky top-0 h-screen flex-col xl:basis-[30%]">
-				<div class="ml-4 mt-2 w-[70%]">
+				<div class={`ml-4 mt-2 max-w-xs ${isSearchboxWhitelisted() ? 'hidden' : ''}`}>	
 					<SearchInput
 						onEnter={(next) => {
 							if (next.trim()) {
