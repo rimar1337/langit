@@ -1,4 +1,4 @@
-import { Match, Switch, lazy } from 'solid-js';
+import { Match, Switch, createSignal, lazy } from 'solid-js';
 
 import type { RefOf } from '@intrnl/bluesky-client/atp-schema';
 
@@ -13,6 +13,8 @@ export interface EmbedImageProps {
 	borderless?: boolean;
 	blur?: boolean;
 	interactive?: boolean;
+	quote?: boolean;
+	detailed?: boolean;
 }
 
 const LazyImageViewerDialog = lazy(() => import('~/components/dialogs/ImageViewerDialog.tsx'));
@@ -23,6 +25,9 @@ const EmbedImage = (props: EmbedImageProps) => {
 	const interactive = props.interactive;
 	const borderless = props.borderless;
 	const blur = () => props.blur;
+	const isInQuote = () => props.quote;
+	const isDetailed = () => props.detailed;
+
 
 	const render = (index: number, standalone: boolean) => {
 		const image = images()[index];
@@ -70,7 +75,7 @@ const EmbedImage = (props: EmbedImageProps) => {
 		<div classList={{ 'overflow-hidden rounded-2xl border border-divider': !borderless }}>
 			<Switch>
 				<Match when={images().length >= 4}>
-					<div class="flex aspect-video xl:gap-1 gap-0.5">
+					<div class={`flex xl:gap-1 gap-0.5 ${isInQuote() && !isDetailed() ? 'aspect-square' : 'aspect-video'}`}>	
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
 							{render(0, false)}
 							{render(2, false)}
@@ -84,7 +89,7 @@ const EmbedImage = (props: EmbedImageProps) => {
 				</Match>
 
 				<Match when={images().length >= 3}>
-					<div class="flex aspect-video xl:gap-1 gap-0.5">
+					<div class={`flex xl:gap-1 gap-0.5 ${isInQuote() && !isDetailed() ? 'aspect-square' : 'aspect-video'}`}>	
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
 							{render(0, true)}
 						</div>
@@ -97,7 +102,7 @@ const EmbedImage = (props: EmbedImageProps) => {
 				</Match>
 
 				<Match when={images().length >= 2}>
-					<div class="flex aspect-video xl:gap-1 gap-0.5">
+					<div class={`flex xl:gap-1 gap-0.5 ${isInQuote() && !isDetailed() ? 'aspect-square' : 'aspect-video'}`}>	
 						<div class="flex grow basis-0 flex-col xl:gap-1 gap-0.5">
 							{render(0, true)}
 							</div>
@@ -108,7 +113,7 @@ const EmbedImage = (props: EmbedImageProps) => {
 				</Match>
 
 				<Match when={images().length === 1}>
-					<div class="flex">
+					<div class={`flex ${isInQuote() && !isDetailed() ? 'aspect-square' : ''} ${isDetailed() ? '' : 'max-h-[50vh]'}`}>	
 						{render(0, true)}
 					</div>
 					</Match>

@@ -1,4 +1,4 @@
-import { Match, Show, Switch, lazy } from 'solid-js';
+import { Match, Show, Switch, createSignal, lazy, onCleanup, onMount } from 'solid-js';
 
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 import { XRPCError } from '@intrnl/bluesky-client/xrpc-utils';
@@ -72,9 +72,33 @@ const AuthenticatedProfileLayout = () => {
 		window.history.go(-1); // Go back one step in browser history
 	};
 
+    const [scrollY, setScrollY] = createSignal(0);
+    const minScroll = (window.innerWidth / 3 - 52);
+    const maxScroll = minScroll + 52;
+    const handleScroll = () => {
+        const currentScroll = window.scrollY;
+        const opacity = Math.max(0, (currentScroll >= maxScroll ? 1 : (currentScroll - minScroll) / (maxScroll - minScroll)));
+        setScrollY(opacity);
+    };
+    onMount(() => {
+        window.addEventListener("scroll", handleScroll);
+    });
+    onCleanup(() => {
+        window.removeEventListener("scroll", handleScroll);
+    });
+    const scrollOpacity = () => {
+        return {
+            opacity: scrollY(),
+        };
+    };
+
+	
 	return (
 		<div class="flex grow flex-col">
-			<div class="sticky top-0 z-20 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4">
+			<div class="sticky top-0 z-20 flex sm:hidden h-13 w-13 items-center bg-transparent -mb-[52px]">
+				<button onClick={handleGoBack} class="bg-background/60 rounded-full text-base font-bold p-2 m-2"><ArrowLeftIcon/></button>
+			</div>
+			<div class="sticky top-0 z-20 flex h-13 items-center border-b border-divider bg-background/70 backdrop-blur-md px-4 -mb-[52px] sm:mb-0 sm:!opacity-100" style={scrollOpacity()}>
 				<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
 				<Switch>
 					<Match when={profile()}>
@@ -152,7 +176,7 @@ const AuthenticatedProfileLayout = () => {
 														return imageViewerComponent();
 													});
 												}}
-												class="hidden aspect-banner bg-background md:block"
+												class="hidden aspect-banner bg-background sm:block"
 											>
 												<img src={banner} class="h-full w-full object-cover" />
 											</button>

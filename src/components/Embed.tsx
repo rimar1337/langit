@@ -22,6 +22,7 @@ export interface EmbedProps {
 	embed: BskyEmbed;
 	/** Whether it should show a large UI for certain embeds */
 	large?: boolean;
+	detailed?: boolean;
 }
 
 const Embed = (props: EmbedProps) => {
@@ -59,11 +60,13 @@ const Embed = (props: EmbedProps) => {
 		return { images, link, record };
 	});
 
+	const isDetailed = Boolean(props.detailed);
+
 	return (
 		<div class="mt-3 flex flex-col gap-3">
 			<Show when={val().link}>{(link) => <EmbedLink link={link()} interactive />}</Show>
 
-			<Show when={val().images}>{(images) => <EmbedImage images={images()} interactive />}</Show>
+			<Show when={val().images}>{(images) => <EmbedImage images={images()} interactive detailed={isDetailed}/>}</Show>
 
 			<Show when={val().record} keyed>
 				{(record) => {
@@ -79,7 +82,7 @@ const Embed = (props: EmbedProps) => {
 						}
 
 						if (type === 'app.bsky.embed.record#viewRecord') {
-							return <EmbedRecord uid={uid()} record={record} large={props.large} interactive />;
+							return <EmbedRecord uid={uid()} record={record} large={props.large} interactive detailed={isDetailed}/>;
 						}
 					}
 

@@ -167,6 +167,9 @@ const AuthenticatedLayout = () => {
 	function updateIsWhitelisted() {
 		setIsWhitelisted(
 			whitelist.some((urlPattern) => {
+				if (location.pathname === `/u/${uid()}/compose` && location.search) {
+					return false;
+				}
 				const regex = new RegExp(urlPattern + '$');
 				return regex.test(location.pathname);
 			}),

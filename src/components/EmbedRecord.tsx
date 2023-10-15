@@ -33,6 +33,7 @@ export interface EmbedRecordProps {
 	/** Whether it should show a large UI for image embeds */
 	large?: boolean;
 	interactive?: boolean;
+	detailed?: boolean;
 }
 
 const moderationCache = new WeakMap<EmbeddedPostRecord, Accessor<ModerationDecision | null>>();
@@ -100,6 +101,8 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 		return decision();
 	});
 
+	const isDetailed = Boolean(props.detailed);
+
 	return (
 		<Show
 			when={!mod()?.b || force()}
@@ -150,7 +153,7 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 					<div class="flex items-start">
 						<Show when={!large() && images()}>
 							<div class="mb-3 ml-3 mt-2 grow basis-0">
-								<EmbedImage images={images()!} blur={mod()?.m} />
+								<EmbedImage images={images()!} blur={mod()?.m} quote detailed={isDetailed}/>
 							</div>
 						</Show>
 
@@ -165,7 +168,7 @@ const EmbedRecord = (props: EmbedRecordProps) => {
 						<div class="mt-3" />
 					</Show>
 
-					<EmbedImage images={images()!} blur={mod()?.m} borderless />
+					<EmbedImage images={images()!} blur={mod()?.m} borderless quote detailed={isDetailed}/>
 				</Show>
 			</Dynamic>
 		</Show>

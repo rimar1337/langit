@@ -203,16 +203,16 @@ const Post = (props: PostProps) => {
 
 				<div class="min-w-0 grow pb-2.5 md:pb-3">
 					<div class="mb-0.5 flex items-center justify-between gap-4">
-						<div class="flex items-center text-[15px] leading-5">
+						<div class="flex items-center text-sm md:text-[15px] leading-5">
 							<a
 								link
 								href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: author().did })}
 								class="group flex gap-1"
 							>
-								<span dir="auto" class="line-clamp-1 break-all font-bold group-hover:underline">
+								<span dir="auto" class="line-clamp-1 break-all font-bold group-hover:underline shrink-0 max-w-[70%]">
 									{author().displayName.value || author().handle.value}
 								</span>
-								<span class="line-clamp-1 break-all text-muted-fg">@{author().handle.value}</span>
+								<span class="line-clamp-1 break-all text-muted-fg shrink min-w-[30%]">@{author().handle.value}</span>
 							</a>
 
 							<span class="text-muted-fg">

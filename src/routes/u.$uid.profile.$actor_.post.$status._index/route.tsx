@@ -478,6 +478,20 @@ const AuthenticatedPostPage = () => {
 									<span class="text-sm text-muted-fg">End of thread</span>
 								</div>
 								<div class="h-[30dvh]"></div>
+								<div class="block sm:hidden sticky bottom-0 bg-background border-t border-divider h-12 z-50">
+									<a
+										link
+										href={`/u/${uid()}/compose?reply=${encodeURIComponent(post.uri)}`}
+										class="flex h-full w-full flex-col items-center px-4 py-1.5"
+										>
+										<div class="flex flex-row w-full h-full">
+											<span class=" text-sm w-full items-center flex text-muted-fg mr-auto">Post your reply</span>
+											<div class="flex h-full w-10 items-center justify-center"><ChatBubbleOutlinedIcon class="text-muted-fg w-4 h-4" /></div>
+											
+										</div>
+										<div class="h-0.5 bg-divider w-full" />
+									</a>
+								</div>
 							</>
 						);
 					}}
@@ -586,7 +600,7 @@ const PostContent = ({ uid, post, searchParams, onTranslate, force }: PostConten
 				</Match>
 			</Switch>
 
-			<Show when={post.embed.value}>{(embed) => <PostEmbedContent uid={uid} embed={embed} mod={mod} />}</Show>
+			<Show when={post.embed.value}>{(embed) => <PostEmbedContent uid={uid} embed={embed} mod={mod}/>}</Show>
 		</>
 	);
 };
@@ -626,5 +640,5 @@ const PostEmbedContent = ({ uid, mod, embed, force }: PostEmbedContentProps) => 
 		);
 	}
 
-	return <Embed uid={uid()} embed={embed()} large/>;
+	return <Embed uid={uid()} embed={embed()} large detailed/>;
 };
