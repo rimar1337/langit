@@ -15,13 +15,14 @@ export type PathsWithParams =
 	| "/u/:uid/you/moderation/content-filter/global"
 	| "/u/:uid/you/moderation/keyword-filter"
 	| "/u/:uid/profile/:actor/post/:status"
-	| "/u/:uid/profile/:actor/lists/:list"
 	| "/u/:uid/profile/:actor/post/:status/likes"
-	| "/u/:uid/you/moderation/keyword-filter/add"
 	| "/u/:uid/profile/:actor/lists/:list/edit"
+	| "/u/:uid/you/moderation/keyword-filter/add"
 	| "/u/:uid/you/moderation/lists/self"
 	| "/u/:uid/you/moderation/lists/self/new"
 	| "/u/:uid/you/moderation/repost-filter"
+	| "/u/:uid/profile/:actor/lists/:list"
+	| "/u/:uid/profile/:actor/lists/:list/feed"
 	| "/u/:uid/you/moderation/lists"
 	| "/u/:uid/you/moderation/muted"
 	| "/u/:uid/profile/:actor/feed/:feed"
@@ -45,8 +46,10 @@ export type PathsWithParams =
 	| "/u/:uid/profile/:actor/likes"
 	| "/u/:uid/profile/:actor/media"
 	| "/u/:uid/notifications"
+	| "/u/:uid/explore/tags"
 	| "/u/:uid/you/invites"
 	| "/u/:uid/you"
+	| "/u/:uid/tags/:tag"
 	| "/u/:uid/compose"
 	| "/r/*";
 export type PathsWithoutParams = 
@@ -63,13 +66,14 @@ export interface Params {
 	"/u/:uid/you/moderation/content-filter/global": { "uid": string };
 	"/u/:uid/you/moderation/keyword-filter": { "uid": string };
 	"/u/:uid/profile/:actor/post/:status": { "uid": string, "actor": string, "status": string };
-	"/u/:uid/profile/:actor/lists/:list": { "uid": string, "actor": string, "list": string };
 	"/u/:uid/profile/:actor/post/:status/likes": { "uid": string, "actor": string, "status": string };
-	"/u/:uid/you/moderation/keyword-filter/add": { "uid": string };
 	"/u/:uid/profile/:actor/lists/:list/edit": { "uid": string, "actor": string, "list": string };
+	"/u/:uid/you/moderation/keyword-filter/add": { "uid": string };
 	"/u/:uid/you/moderation/lists/self": { "uid": string };
 	"/u/:uid/you/moderation/lists/self/new": { "uid": string };
 	"/u/:uid/you/moderation/repost-filter": { "uid": string };
+	"/u/:uid/profile/:actor/lists/:list": { "uid": string, "actor": string, "list": string };
+	"/u/:uid/profile/:actor/lists/:list/feed": { "uid": string, "actor": string, "list": string };
 	"/u/:uid/you/moderation/lists": { "uid": string };
 	"/u/:uid/you/moderation/muted": { "uid": string };
 	"/u/:uid/profile/:actor/feed/:feed": { "uid": string, "actor": string, "feed": string };
@@ -93,8 +97,10 @@ export interface Params {
 	"/u/:uid/profile/:actor/likes": { "uid": string, "actor": string };
 	"/u/:uid/profile/:actor/media": { "uid": string, "actor": string };
 	"/u/:uid/notifications": { "uid": string };
+	"/u/:uid/explore/tags": { "uid": string };
 	"/u/:uid/you/invites": { "uid": string };
 	"/u/:uid/you": { "uid": string };
+	"/u/:uid/tags/:tag": { "uid": string, "tag": string };
 	"/u/:uid/compose": { "uid": string };
 	"/r/*": { "*": string };
 }

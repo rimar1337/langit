@@ -1,14 +1,17 @@
 import CloseIcon from '~/icons/baseline-close';
+import SearchIcon from '~/icons/baseline-search';
 
 export interface SearchInputProps {
 	value?: string;
 	placeholder?: string;
 	onEnter: (next: string) => void;
+	tall?: boolean;
 }
 
 const SearchInput = (props: SearchInputProps) => {
 	return (
-		<div class="flex h-8 grow rounded-full bg-hinted outline-2 -outline-offset-1 outline-accent outline-none focus-within:outline dark:bg-[#202327]">
+		<div class={`flex ${props.tall ? 'h-10' : 'h-8'} flex grow rounded-full bg-hinted outline-2 -outline-offset-1 outline-accent outline-none focus-within:outline dark:bg-[#202327]`}>
+		<div class={`flex ${props.tall ? 'flex' : 'hidden'} items-center justify-center ml-4 -mr-1`}> <SearchIcon class=" opacity-50 h-5 w-5"/> </div>
 			<input
 				type="text"
 				value={props.value ?? ''}

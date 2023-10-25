@@ -10,11 +10,13 @@ type ModalComponent = () => JSX.Element;
 
 export interface ModalOptions {
 	disableBackdropClose?: boolean;
+	suspense?: boolean;
 }
 
 interface ModalState {
 	id: number;
 	render: ModalComponent;
+	suspense: boolean;
 	disableBackdropClose: Signal<boolean>;
 }
 
@@ -29,13 +31,27 @@ let _id = 0;
 
 const StateContext = createContext<ModalContextState>();
 
+const createModalState = (fn: ModalComponent, options?: ModalOptions): ModalState => {
+	return {
+		id: _id++,
+		render: fn,
+		suspense: options?.suspense ?? true,
+		disableBackdropClose: signal(options?.disableBackdropClose ?? false),
+	};
+};
+
 export const openModal = (fn: ModalComponent, options?: ModalOptions) => {
 	setModals(($modals) => {
-		return $modals.concat({
-			id: _id++,
-			render: fn,
-			disableBackdropClose: signal(options?.disableBackdropClose ?? false),
-		});
+		return $modals.concat(createModalState(fn, options));
+	});
+};
+
+export const replaceModal = (fn: ModalComponent, options?: ModalOptions) => {
+	setModals(($modals) => {
+		const cloned = $modals.slice(0, -1);
+		cloned.push(createModalState(fn, options));
+
+		return cloned;
 	});
 };
 
@@ -58,15 +74,23 @@ export const useModalState = () => {
 export const ModalProvider = () => {
 	return (
 		<For each={modals()}>
-			{(modal) => (
-				<Dialog open onClose={() => modal.disableBackdropClose.value || closeModal()}>
-					<Suspense
-						fallback={
-							<div class="my-auto">
-								<CircularProgress />
-							</div>
-						}
-					>
+			{(modal) => {
+				const render = (suspense: boolean) => {
+					if (suspense) {
+						return (
+							<Suspense
+								fallback={
+									<div class="my-auto">
+										<CircularProgress />
+									</div>
+								}
+							>
+								{/* @once */ render(false)}
+							</Suspense>
+						);
+					}
+
+					return (
 						<StateContext.Provider
 							value={{
 								id: modal.id,
@@ -76,9 +100,15 @@ export const ModalProvider = () => {
 						>
 							{modal.render()}
 						</StateContext.Provider>
-					</Suspense>
-				</Dialog>
-			)}
+					);
+				};
+
+				return (
+					<Dialog open onClose={() => modal.disableBackdropClose.value || closeModal()}>
+						{/* @once */ render(modal.suspense)}
+					</Dialog>
+				);
+			}}
 		</For>
 	);
 };

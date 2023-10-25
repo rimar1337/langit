@@ -4,7 +4,7 @@ import type { EnhancedResource, QueryFn } from '@intrnl/sq';
 
 import { multiagent } from '~/globals/agent.ts';
 import { systemLanguages } from '~/globals/platform.ts';
-import { getAccountModerationPreferences, preferences } from '~/globals/preferences.ts';
+import { getAccountModerationOpts, getFilterPref, getLanguagePref } from '~/globals/settings.ts';
 import { assert } from '~/utils/misc.ts';
 
 import {
@@ -32,8 +32,13 @@ export interface HomeTimelineParams {
 	algorithm: 'reverse-chronological' | (string & {});
 }
 
-export interface CustomTimelineParams {
-	type: 'custom';
+export interface FeedTimelineParams {
+	type: 'feed';
+	uri: string;
+}
+
+export interface ListTimelineParams {
+	type: 'list';
 	uri: string;
 }
 
@@ -48,24 +53,29 @@ export interface SearchTimelineParams {
 	query: string;
 }
 
-export type FeedParams =
+export type TimelineParams =
+	| FeedTimelineParams
 	| HomeTimelineParams
-	| CustomTimelineParams
+	| ListTimelineParams
 	| ProfileTimelineParams
 	| SearchTimelineParams;
 
+export interface FeedPageCursor {
+	key: string | null;
+	remaining: TimelineSlice[];
+}
+
 export interface FeedPage {
-	cursor?: string;
+	cursor?: FeedPageCursor;
 	cid?: string;
 	slices: TimelineSlice[];
-	remainingSlices: TimelineSlice[];
 }
 
 export interface FeedLatestResult {
 	cid: string | undefined;
 }
 
-export type FeedResource = EnhancedResource<Collection<FeedPage>, string>;
+export type FeedResource = EnhancedResource<Collection<FeedPage>, FeedPageCursor>;
 export type FeedLatestResource = EnhancedResource<FeedLatestResult>;
 
 type TimelineResponse = ResponseOf<'app.bsky.feed.getTimeline'>;
@@ -103,59 +113,46 @@ const countPosts = (slices: TimelineSlice[], limit?: number) => {
 	return count;
 };
 
-// Error thrown when post search is being used outside of bsky.social, since we
-// are currently unable to determine the BGS affiliation of other instances.
-// ref: https://github.com/bluesky-social/atproto/issues/1307
-export class IncompatibleSearchError extends Error {
-	constructor(message?: string, options?: ErrorOptions) {
-		super(message, options);
-		this.name = 'IncompatibleSearchError';
-	}
-}
-
-export const getTimelineKey = (uid: DID, params: FeedParams, limit = MAX_POSTS) => {
+export const getTimelineKey = (uid: DID, params: TimelineParams, limit = MAX_POSTS) => {
 	return ['getFeed', uid, params, limit] as const;
 };
-export const getTimeline: QueryFn<Collection<FeedPage>, ReturnType<typeof getTimelineKey>, string> = async (
-	key,
-	{ data: prevData, param: prevCursor },
-) => {
+export const getTimeline: QueryFn<
+	Collection<FeedPage>,
+	ReturnType<typeof getTimelineKey>,
+	FeedPageCursor
+> = async (key, { data: collection, param }) => {
 	const [, uid, params, limit] = key;
 	const type = params.type;
 
 	const agent = await multiagent.connect(uid);
 
-	let cursor = prevCursor;
 	let empty = 0;
 	let cid: string | undefined;
 
-	let slices: TimelineSlice[];
+	let cursor: string | null | undefined;
+	let items: TimelineSlice[] = [];
 	let count = 0;
 
 	let sliceFilter: SliceFilter | undefined | null;
 	let postFilter: PostFilter | undefined;
 
-	if (cursor && prevData) {
-		const pages = prevData.pages;
-		const last = pages[pages.length - 1];
-
-		slices = last.remainingSlices;
-		count = countPosts(slices);
-	} else {
-		slices = [];
+	if (param) {
+		cursor = param.key;
+		items = param.remaining;
+		count = countPosts(items);
 	}
 
 	if (type === 'home') {
 		sliceFilter = createHomeSliceFilter(uid);
 		postFilter = combine([
 			createHiddenRepostFilter(uid),
-			createDuplicatePostFilter(slices),
+			createDuplicatePostFilter(items),
 			createLabelPostFilter(uid),
 			createTempMutePostFilter(uid),
 		]);
-	} else if (type === 'custom') {
+	} else if (type === 'feed' || type === 'list') {
 		postFilter = combine([
-			createDuplicatePostFilter(slices),
+			createDuplicatePostFilter(items),
 			createLanguagePostFilter(uid),
 			createLabelPostFilter(uid),
 			createTempMutePostFilter(uid),
@@ -163,16 +160,14 @@ export const getTimeline: QueryFn<Collection<FeedPage>, ReturnType<typeof getTim
 	} else if (type === 'profile') {
 		postFilter = createLabelPostFilter(uid);
 
-		if (params.tab !== 'likes' && params.tab !== 'media') {
-			sliceFilter = createProfileSliceFilter(params.actor, params.tab === 'replies');
-		} else {
+		if (params.tab === 'likes' || params.tab === 'media') {
 			sliceFilter = null;
 		}
 	} else {
 		postFilter = createLabelPostFilter(uid);
 	}
 
-	while (count < limit) {
+	while (cursor !== null && count < limit) {
 		const timeline = await fetchPage(agent, params, limit, cursor);
 
 		const feed = timeline.feed;
@@ -181,34 +176,36 @@ export const getTimeline: QueryFn<Collection<FeedPage>, ReturnType<typeof getTim
 				? createTimelineSlices(uid, feed, sliceFilter, postFilter)
 				: createUnjoinedSlices(uid, feed, postFilter);
 
-		cursor = timeline.cursor;
+		cursor = timeline.cursor || null;
 		empty = result.length > 0 ? 0 : empty + 1;
-		slices = slices.concat(result);
+		items = items.concat(result);
 
 		count += countPosts(result);
 
 		cid ||= feed.length > 0 ? feed[0].post.cid : undefined;
 
-		if (!cursor || empty >= MAX_EMPTY) {
+		if (empty >= MAX_EMPTY) {
 			break;
 		}
 	}
 
 	// we're still slicing by the amount of slices and not amount of posts
-	const remainingSlices = slices.splice(countPosts(slices, limit) + 1, slices.length);
+	const spliced = countPosts(items, limit) + 1;
+
+	const slices = items.slice(0, spliced);
+	const remaining = items.slice(spliced);
 
 	const page: FeedPage = {
-		cursor,
-		cid,
-		slices,
-		remainingSlices,
+		cursor: cursor || remaining.length > 0 ? { key: cursor || null, remaining: remaining } : undefined,
+		cid: cid,
+		slices: slices,
 	};
 
-	return pushCollection(prevData, page, prevCursor);
+	return pushCollection(collection, page, param);
 };
 
 /// Latest feed query
-export const getTimelineLatestKey = (uid: DID, params: FeedParams) => {
+export const getTimelineLatestKey = (uid: DID, params: TimelineParams) => {
 	return ['getFeedLatest', uid, params] as const;
 };
 export const getTimelineLatest: QueryFn<FeedLatestResult, ReturnType<typeof getTimelineLatestKey>> = async (
@@ -243,7 +240,7 @@ interface PostSearchView {
 
 const fetchPage = async (
 	agent: Agent,
-	params: FeedParams,
+	params: TimelineParams,
 	limit: number,
 	cursor: string | undefined,
 ): Promise<TimelineResponse> => {
@@ -259,10 +256,20 @@ const fetchPage = async (
 		});
 
 		return response.data;
-	} else if (type === 'custom') {
+	} else if (type === 'feed') {
 		const response = await agent.rpc.get('app.bsky.feed.getFeed', {
 			params: {
 				feed: params.uri,
+				cursor: cursor,
+				limit: limit,
+			},
+		});
+
+		return response.data;
+	} else if (type === 'list') {
+		const response = await agent.rpc.get('app.bsky.feed.getListFeed', {
+			params: {
+				list: params.uri,
 				cursor: cursor,
 				limit: limit,
 			},
@@ -301,23 +308,24 @@ const fetchPage = async (
 					actor: params.actor,
 					cursor: cursor,
 					limit: limit,
-					filter: params.tab === 'media' ? 'posts_with_media' : 'posts_with_replies',
+					filter:
+						params.tab === 'media'
+							? 'posts_with_media'
+							: params.tab === 'replies'
+							? 'posts_with_replies'
+							: 'posts_no_replies',
 				},
 			});
 
 			return response.data;
 		}
 	} else if (type === 'search') {
-		if (agent.rpc.serviceUri !== 'https://bsky.social') {
-			throw new IncompatibleSearchError();
-		}
-
 		const offset = cursor ? +cursor : 0;
 		const searchUri =
 			`https://search.bsky.social/search/posts` +
 			`?count=${limit}` +
 			`&offset=${offset}` +
-			`&q=${encodeURI(params.query)}`;
+			`&q=${encodeURIComponent(params.query)}`;
 
 		const searchResponse = await fetch(searchUri);
 
@@ -396,15 +404,15 @@ const createDuplicatePostFilter = (slices: TimelineSlice[]): PostFilter => {
 };
 
 const createLabelPostFilter = (uid: DID): PostFilter | undefined => {
-	const prefs = getAccountModerationPreferences(uid);
+	const opts = getAccountModerationOpts(uid);
 
 	return (item) => {
 		const post = item.post;
 		const labels = post.labels;
 
 		const accu: ModerationCause[] = [];
-		decideLabelModeration(accu, labels, post.author.did, prefs);
-		decideMutedKeywordModeration(accu, (post.record as PostRecord).text, PreferenceHide, prefs);
+		decideLabelModeration(accu, labels, post.author.did, opts);
+		decideMutedKeywordModeration(accu, (post.record as PostRecord).text, PreferenceHide, opts);
 
 		const decision = finalizeModeration(accu);
 
@@ -413,12 +421,12 @@ const createLabelPostFilter = (uid: DID): PostFilter | undefined => {
 };
 
 const createLanguagePostFilter = (uid: DID): PostFilter | undefined => {
-	const $prefs = preferences[uid] || {};
+	const prefs = getLanguagePref(uid);
 
-	const allowUnspecified = $prefs.cl_unspecified ?? true;
-	let languages = $prefs.cl_codes;
+	const allowUnspecified = prefs.allowUnspecified;
+	let languages = prefs.languages;
 
-	if ($prefs.cl_systemLanguage ?? true) {
+	if (prefs.useSystemLanguages) {
 		languages = languages ? systemLanguages.concat(languages) : systemLanguages;
 	}
 
@@ -443,9 +451,8 @@ const createLanguagePostFilter = (uid: DID): PostFilter | undefined => {
 };
 
 const createHiddenRepostFilter = (uid: DID): PostFilter | undefined => {
-	const $prefs = preferences[uid];
-
-	const hidden = $prefs?.pf_hideReposts;
+	const prefs = getFilterPref(uid);
+	const hidden = prefs.hideReposts;
 
 	if (!hidden) {
 		return;
@@ -459,10 +466,10 @@ const createHiddenRepostFilter = (uid: DID): PostFilter | undefined => {
 };
 
 const createTempMutePostFilter = (uid: DID): PostFilter | undefined => {
-	const $prefs = preferences[uid];
+	const prefs = getFilterPref(uid);
 	const now = Date.now();
 
-	let mutes = $prefs?.pf_tempMutes;
+	let mutes = prefs.tempMutes;
 
 	// check if there are any outdated mutes before proceeding
 	if (mutes) {
@@ -487,13 +494,8 @@ const createTempMutePostFilter = (uid: DID): PostFilter | undefined => {
 			size++;
 		}
 
-		// set mutes to undefined if we no longer have any
-		if (size < 1) {
-			mutes = undefined;
-		}
-
 		if (outdated) {
-			$prefs!.pf_tempMutes = mutes;
+			prefs.tempMutes = mutes;
 		}
 	}
 
@@ -546,30 +548,6 @@ const createHomeSliceFilter = (uid: DID): SliceFilter | undefined => {
 			}
 		} else if (first.post.record.peek().reply) {
 			return yankReposts(items);
-		}
-
-		return true;
-	};
-};
-
-const createProfileSliceFilter = (did: DID, replies: boolean): SliceFilter | undefined => {
-	return (slice) => {
-		const items = slice.items;
-		const first = items[0];
-
-		if (!replies && (!first.reason || first.reason.$type !== 'app.bsky.feed.defs#reasonRepost')) {
-			const reply = first.reply;
-
-			if (reply) {
-				const root = reply.root;
-				const parent = reply.parent;
-
-				if (root.author.did !== did || parent.author.did !== did) {
-					return yankReposts(items);
-				}
-			} else if (first.post.record.peek().reply) {
-				return yankReposts(items);
-			}
 		}
 
 		return true;

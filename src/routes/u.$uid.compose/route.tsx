@@ -4,8 +4,6 @@ import type { AtBlob, DID, Records, RefOf, UnionOf } from '@intrnl/bluesky-clien
 import { createQuery } from '@intrnl/sq';
 import { useBeforeLeave, useSearchParams } from '@solidjs/router';
 
-import TextareaAutosize from 'solid-textarea-autosize';
-
 import { createPost } from '~/api/mutations/create-post.ts';
 import { uploadBlob } from '~/api/mutations/upload-blob.ts';
 import {
@@ -17,13 +15,13 @@ import { getLinkMeta, getLinkMetaKey } from '~/api/queries/get-link-meta';
 import { getInitialPost, getPost, getPostKey } from '~/api/queries/get-post.ts';
 import { getInitialProfile, getProfile, getProfileKey } from '~/api/queries/get-profile.ts';
 
-import { finalizePrelimFacets, textToPrelimRt } from '~/api/richtext/compose.ts';
+import { finalizeRt, getRtLength, textToPrelimRt } from '~/api/richtext/composer.ts';
 
 import { getCurrentDate, getRecordId } from '~/api/utils.ts';
 
 import { openModal } from '~/globals/modals.tsx';
 import { systemLanguages } from '~/globals/platform.ts';
-import { preferences } from '~/globals/preferences.ts';
+import { getLanguagePref } from '~/globals/settings.ts';
 import { useNavigate, useParams } from '~/router.ts';
 
 import { createDerivedSignal } from '~/utils/hooks.ts';
@@ -31,7 +29,6 @@ import { compressPostImage } from '~/utils/image.ts';
 import { languageNames } from '~/utils/intl/displaynames.ts';
 import { isAtpFeedUri, isAtpPostUri, isBskyFeedUrl, isBskyPostUrl } from '~/utils/link.ts';
 import { Title } from '~/utils/meta.tsx';
-import { model } from '~/utils/misc.ts';
 import { signal } from '~/utils/signals.ts';
 
 import BlobImage from '~/components/BlobImage.tsx';
@@ -73,7 +70,8 @@ const enum PostState {
 }
 
 const getLanguages = (uid: DID): string[] => {
-	const lang = preferences[uid]?.cl_defaultLanguage ?? 'system';
+	const prefs = getLanguagePref(uid);
+	const lang = prefs.defaultPostLanguage;
 
 	if (lang === 'none') {
 		return [];
@@ -129,44 +127,52 @@ const AuthenticatedComposePage = () => {
 	});
 
 	const [reply] = createQuery({
-		key: () => getPostKey(uid(), replyUri()!),
+		key: () => {
+			const $replyUri = replyUri();
+			if ($replyUri) {
+				return getPostKey(uid(), $replyUri);
+			}
+		},
 		fetch: getPost,
 		staleTime: 30_000,
 		initialData: getInitialPost,
-		enabled: () => {
-			return !!replyUri();
-		},
 	});
 
 	const [quote] = createQuery({
-		key: () => getPostKey(uid(), recordUri()!),
+		key: () => {
+			const $recordUri = recordUri();
+			if ($recordUri && (isAtpPostUri($recordUri) || isBskyPostUrl($recordUri))) {
+				return getPostKey(uid(), recordUri()!);
+			}
+		},
 		fetch: getPost,
 		staleTime: 30_000,
 		initialData: getInitialPost,
-		enabled: () => {
-			const uri = recordUri();
-			return !!uri && (isAtpPostUri(uri) || isBskyPostUrl(uri));
-		},
 	});
 
 	const [feed] = createQuery({
-		key: () => getFeedGeneratorKey(uid(), recordUri()!),
+		key: () => {
+			const $recordUri = recordUri();
+			if ($recordUri && (isAtpFeedUri($recordUri) || isBskyFeedUrl($recordUri))) {
+				return getFeedGeneratorKey(uid(), recordUri()!);
+			}
+		},
 		fetch: getFeedGenerator,
 		staleTime: 30_000,
 		initialData: getInitialFeedGenerator,
-		enabled: () => {
-			const uri = recordUri();
-			return !!uri && (isAtpFeedUri(uri) || isBskyFeedUrl(uri));
-		},
 	});
 
 	const [link] = createQuery({
-		key: () => getLinkMetaKey(linkUrl()!),
+		key: () => {
+			const $linkUri = linkUrl();
+			if ($linkUri) {
+				return getLinkMetaKey($linkUri);
+			}
+		},
 		fetch: getLinkMeta,
 		staleTime: 30_000,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
-		enabled: () => !!linkUrl(),
 	});
 
 	const [profile] = createQuery({
@@ -181,7 +187,7 @@ const AuthenticatedComposePage = () => {
 
 	const length = createMemo(() => {
 		const rt = prelimRichtext();
-		return rt ? rt.length : 0;
+		return getRtLength(rt);
 	});
 
 	const isEnabled = createMemo(() => {
@@ -197,7 +203,7 @@ const AuthenticatedComposePage = () => {
 	const handleSubmit = async () => {
 		const rt = prelimRichtext();
 
-		if (state() !== PostState.IDLE || !(rt.length > 0 || images().length > 0)) {
+		if (state() !== PostState.IDLE || !(length() > 0 || images().length > 0)) {
 			return;
 		}
 
@@ -312,9 +318,9 @@ const AuthenticatedComposePage = () => {
 			}
 		}
 
-		if (!(rt as any).resolvedFacets) {
+		if (!(rt as any).res) {
 			try {
-				(rt as any).resolvedFacets = await finalizePrelimFacets($uid, rt);
+				(rt as any).res = await finalizeRt($uid, rt);
 			} catch (err) {
 				console.error(`Failed to resolve facets`, err);
 
@@ -328,8 +334,8 @@ const AuthenticatedComposePage = () => {
 
 		const record: PostRecord = {
 			createdAt: getCurrentDate(),
-			facets: (rt as any).resolvedFacets,
-			text: rt.text,
+			facets: (rt as any).res.facets,
+			text: (rt as any).res.text,
 			reply: replyRecord,
 			embed: embedRecord,
 			langs: $languages.length > 0 ? $languages : undefined,
@@ -377,7 +383,7 @@ const AuthenticatedComposePage = () => {
 		setImages(images().concat(next));
 	};
 
-	const addImages = async (files: (Blob | File)[]) => {
+	const addImages = async (files: File[]) => {
 		if (images().length + files.length > MAX_IMAGE) {
 			setMessage(`You can only add up to 4 images in a single post`);
 			return;
@@ -508,7 +514,7 @@ const AuthenticatedComposePage = () => {
 					<RichtextComposer
 						uid={uid()}
 						value={input()}
-						class="block w-full resize-none bg-transparent pb-4 pr-3 pt-5 text-xl outline-none"
+						rt={prelimRichtext()}
 						placeholder="What's happening?"
 						minRows={4}
 						onChange={setInput}
@@ -573,7 +579,7 @@ const AuthenticatedComposePage = () => {
 												indexedAt: null,
 												uri: data().uri,
 												avatar: data().avatar.value,
-												displayName: data().displayName.value,
+												displayName: data().name.value,
 												creator: {
 													did: data().creator.did,
 													handle: data().creator.handle.value,

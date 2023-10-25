@@ -113,7 +113,7 @@ const EmbedImage = (props: EmbedImageProps) => {
 				</Match>
 
 				<Match when={images().length === 1}>
-					<div class={`flex ${isInQuote() && !isDetailed() ? 'aspect-square' : ''} ${isDetailed() ? '' : 'max-h-[50vh]'}`}>	
+					<div class={`flex ${isInQuote() && !isDetailed() ? 'aspect-square' : ''} ${isDetailed() ? '' : 'max-h-[50vh] md:max-h-[65vh]'}`}>	
 						{render(0, true)}
 					</div>
 					</Match>

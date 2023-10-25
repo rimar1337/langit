@@ -56,11 +56,15 @@ export default defineConfig({
 		modulePreload: {
 			polyfill: false,
 		},
+		terserOptions: {
+			compress: {
+				passes: 2,
+			},
+		},
 	},
 	resolve: {
 		alias: {
 			'~': path.join(__dirname, './src'),
-			yjs: path.join(__dirname, './src/lib/lexical/yjs-stub.ts'),
 		},
 	},
 });

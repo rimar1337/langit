@@ -1,10 +1,10 @@
 import { For, createMemo } from 'solid-js';
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 
+import { openModal } from '~/globals/modals.tsx';
+import { getModerationPref } from '~/globals/settings.ts';
 import { generatePath, useParams } from '~/router.ts';
 import { Title } from '~/utils/meta.tsx';
-import { openModal } from '~/globals/modals.tsx';
-import { getAccountModerationPreferences } from '~/globals/preferences.ts';
 
 import AddIcon from '~/icons/baseline-add.tsx';
 import VisibilityIcon from '~/icons/baseline-visibility.tsx';
@@ -18,13 +18,14 @@ const AuthenticatedContentFilterModerationPage = () => {
 
 	const uid = () => params.uid as DID;
 
-	const prefs = createMemo(() => {
-		return getAccountModerationPreferences(uid());
+	const labelers = createMemo(() => {
+		const prefs = getModerationPref(uid());
+		return prefs.labelers;
 	});
 
 	const enabledLabelers = createMemo(() => {
-		const $prefs = prefs().labelers;
-		return LABELERS.filter((labeler) => $prefs[labeler.did]);
+		const $labelers = labelers();
+		return LABELERS.filter((labeler) => $labelers[labeler.did]);
 	});
 
 	const handleGoBack = () => {
@@ -77,8 +78,8 @@ const AuthenticatedContentFilterModerationPage = () => {
 						<AddLabelerDialog
 							uid={uid()}
 							onPick={(labeler) => {
-								const $prefs = prefs();
-								$prefs.labelers[labeler.did] = { groups: {}, labels: {} };
+								const $labelers = labelers();
+								$labelers[labeler.did] = { groups: {}, labels: {} };
 							}}
 						/>
 					));

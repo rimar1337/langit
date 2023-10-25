@@ -1,32 +1,19 @@
-import { type ComponentProps, For, createMemo, Show } from 'solid-js';
+import { For, createMemo, Show } from 'solid-js';
 
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 
+import { openModal } from '~/globals/modals.tsx';
 import { systemLanguages } from '~/globals/platform.ts';
-import { getAccountPreferences } from '~/globals/preferences.ts';
+import { getLanguagePref, getTranslationPref } from '~/globals/settings.ts';
 import { useParams } from '~/router.ts';
 import { languageNames } from '~/utils/intl/displaynames.ts';
 
-import LanguagePicker from '~/components/pickers/LanguagePicker';
-import { openModal } from '~/globals/modals';
+import LanguagePicker from '~/components/pickers/LanguagePicker.tsx';
+import Checkbox from '~/components/Checkbox.tsx';
+
 import AddIcon from '~/icons/baseline-add.tsx';
-import CheckBoxOutlineBlankIcon from '~/icons/baseline-check-box-outline-blank.tsx';
-import CheckBoxIcon from '~/icons/baseline-check-box.tsx';
 import DeleteIcon from '~/icons/baseline-delete.tsx';
 import ArrowLeftIcon from '~/icons/baseline-arrow-left';
-
-const Checkbox = (props: ComponentProps<'input'>) => {
-	return (
-		<label class="relative inline-flex  cursor-pointer text-xl">
-			<input {...props} type="checkbox" class="peer h-0 w-0 appearance-none leading-none" />
-
-			<div class="pointer-events-none absolute -inset-1.5 rounded-full peer-hover:bg-hinted peer-focus-visible:bg-hinted" />
-
-			<CheckBoxOutlineBlankIcon class="z-10 text-muted-fg peer-checked:hidden peer-disabled:opacity-50" />
-			<CheckBoxIcon class="z-10 hidden text-accent peer-checked:block peer-disabled:opacity-50" />
-		</label>
-	);
-};
 
 const AuthenticatedLanguagesSettingsPage = () => {
 	const params = useParams('/u/:uid/settings/languages');
@@ -34,7 +21,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 	const uid = () => params.uid as DID;
 
 	const prefs = createMemo(() => {
-		return getAccountPreferences(uid());
+		return { lang: getLanguagePref(uid()), trans: getTranslationPref(uid()) };
 	});
 
 	const handleGoBack = () => {
@@ -54,7 +41,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 						<LanguagePicker
 							post
 							onPick={(next) => {
-								prefs().cl_defaultLanguage = next;
+								prefs().lang.defaultPostLanguage = next;
 							}}
 						/>
 					));
@@ -65,7 +52,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 
 				<p class="pt-1 text-[0.8125rem] text-muted-fg">
 					{(() => {
-						const pref = prefs().cl_defaultLanguage ?? 'system';
+						const pref = prefs().lang.defaultPostLanguage;
 
 						if (pref === 'none') {
 							return `None`;
@@ -91,10 +78,10 @@ const AuthenticatedLanguagesSettingsPage = () => {
 				<label class="flex justify-between gap-4">
 					<span class="text-sm">Show unspecified posts</span>
 					<Checkbox
-						checked={prefs().cl_unspecified ?? true}
+						checked={prefs().lang.allowUnspecified}
 						onChange={(ev) => {
 							const next = ev.target.checked;
-							prefs().cl_unspecified = next;
+							prefs().lang.allowUnspecified = next;
 						}}
 					/>
 				</label>
@@ -108,10 +95,10 @@ const AuthenticatedLanguagesSettingsPage = () => {
 				<label class="flex justify-between gap-4">
 					<span class="text-sm">Use system languages</span>
 					<Checkbox
-						checked={prefs().cl_systemLanguage ?? true}
+						checked={prefs().lang.useSystemLanguages}
 						onChange={(ev) => {
 							const next = ev.target.checked;
-							prefs().cl_systemLanguage = next;
+							prefs().lang.useSystemLanguages = next;
 						}}
 					/>
 				</label>
@@ -125,14 +112,14 @@ const AuthenticatedLanguagesSettingsPage = () => {
 				Show me posts with these languages
 			</p>
 
-			<For each={(prefs().cl_systemLanguage ?? true) && systemLanguages}>
+			<For each={prefs().lang.useSystemLanguages && systemLanguages}>
 				{(code) => <div class="items-center gap-4 px-4 py-3 text-sm">{languageNames.of(code)}</div>}
 			</For>
 
 			<For
-				each={prefs().cl_codes}
+				each={prefs().lang.languages}
 				fallback={
-					<Show when={!(prefs().cl_systemLanguage ?? true)}>
+					<Show when={!prefs().lang.useSystemLanguages}>
 						<div class="flex items-center gap-4 px-4 py-3 text-sm">No languages added</div>
 					</Show>
 				}
@@ -145,13 +132,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 							title="Remove language"
 							onClick={() => {
 								const $prefs = prefs();
-								const arr = $prefs.cl_codes!;
-
-								arr.splice(idx(), 1);
-
-								if (arr.length === 0) {
-									$prefs.cl_codes = undefined;
-								}
+								$prefs.lang.languages.splice(idx(), 1);
 							}}
 							class="-my-1 -mr-1.5 flex h-8 w-8 items-center justify-center rounded-full text-xl text-muted-fg hover:bg-hinted"
 						>
@@ -165,8 +146,8 @@ const AuthenticatedLanguagesSettingsPage = () => {
 				onClick={() => {
 					const $prefs = prefs();
 
-					let codes = $prefs.cl_codes;
-					if ($prefs.cl_systemLanguage ?? true) {
+					let codes = $prefs.lang.languages;
+					if ($prefs.lang.useSystemLanguages) {
 						codes = codes ? codes.concat(systemLanguages) : systemLanguages;
 					}
 
@@ -174,13 +155,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 						<LanguagePicker
 							exclude={codes || []}
 							onPick={(next) => {
-								const arr = $prefs.cl_codes;
-
-								if (arr) {
-									arr.push(next);
-								} else {
-									$prefs.cl_codes = [next];
-								}
+								$prefs.lang.languages.push(next);
 							}}
 						/>
 					));
@@ -205,7 +180,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 						<LanguagePicker
 							post
 							onPick={(next) => {
-								prefs().ct_language = next;
+								prefs().trans.to = next;
 							}}
 						/>
 					));
@@ -216,7 +191,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 
 				<p class="pt-1 text-[0.8125rem] text-muted-fg">
 					{(() => {
-						const pref = prefs().ct_language ?? 'system';
+						const pref = prefs().trans.to;
 
 						if (pref === 'none') {
 							return `Disabled (None)`;
@@ -234,7 +209,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 			</p>
 
 			<For
-				each={prefs().ct_exclusions}
+				each={prefs().trans.exclusions}
 				fallback={<div class="flex items-center gap-4 px-4 py-3 text-sm">No languages added</div>}
 			>
 				{(code, idx) => (
@@ -245,13 +220,7 @@ const AuthenticatedLanguagesSettingsPage = () => {
 							title="Remove language"
 							onClick={() => {
 								const $prefs = prefs();
-								const arr = $prefs.ct_exclusions!;
-
-								arr.splice(idx(), 1);
-
-								if (arr.length === 0) {
-									$prefs.ct_exclusions = undefined;
-								}
+								$prefs.trans.exclusions.splice(idx(), 1);
 							}}
 							class="-my-1 -mr-1.5 flex h-8 w-8 items-center justify-center rounded-full text-xl text-muted-fg hover:bg-hinted"
 						>
@@ -264,17 +233,13 @@ const AuthenticatedLanguagesSettingsPage = () => {
 			<button
 				onClick={() => {
 					const $prefs = prefs();
-					const exclusions = $prefs.ct_exclusions;
+					const exclusions = $prefs.trans.exclusions;
 
 					openModal(() => (
 						<LanguagePicker
 							exclude={exclusions || []}
 							onPick={(next) => {
-								if (exclusions) {
-									exclusions.push(next);
-								} else {
-									$prefs.ct_exclusions = [next];
-								}
+								exclusions.push(next);
 							}}
 						/>
 					));
