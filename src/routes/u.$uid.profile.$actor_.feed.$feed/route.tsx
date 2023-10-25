@@ -12,14 +12,15 @@ import {
 } from '~/api/queries/get-feed-generator.ts';
 import { getProfileDid, getProfileDidKey } from '~/api/queries/get-profile-did.ts';
 import {
-	type CustomTimelineParams,
+	type FeedTimelineParams,
 	getTimeline,
 	getTimelineKey,
 	getTimelineLatest,
 	getTimelineLatestKey,
 } from '~/api/queries/get-timeline.ts';
 
-import { getAccountPreferences } from '~/globals/preferences.ts';
+import { openModal } from '~/globals/modals.tsx';
+import { getFeedPref } from '~/globals/settings.ts';
 import { generatePath, useParams } from '~/router.ts';
 import * as comformat from '~/utils/intl/comformatter.ts';
 import { Title } from '~/utils/meta.tsx';
@@ -31,6 +32,8 @@ import FavoriteOutlinedIcon from '~/icons/outline-favorite.tsx';
 import FavoriteIcon from '~/icons/baseline-favorite';
 
 import ArrowLeftIcon from '~/icons/baseline-arrow-left.tsx';
+import MoreHorizIcon from '~/icons/baseline-more-horiz';
+import FeedMenu from './FeedMenu';
 
 const AuthenticatedFeedPage = () => {
 	const params = useParams('/u/:uid/profile/:actor/feed/:feed');
@@ -46,70 +49,49 @@ const AuthenticatedFeedPage = () => {
 	});
 
 	const feedUri = () => createFeedGeneratorUri(did()!, feed());
-	const feedParams = (): CustomTimelineParams => ({ type: 'custom', uri: feedUri() });
+	const feedParams = (): FeedTimelineParams => ({ type: 'feed', uri: feedUri() });
 
-	const [info] = createQuery({
-		key: () => getFeedGeneratorKey(uid(), feedUri()),
+	const [info, { refetch: refetchInfo }] = createQuery({
+		key: () => {
+			if (did()) {
+				return getFeedGeneratorKey(uid(), feedUri());
+			} else { // help me
+				throw new Error("idk lmao");
+			}
+		},
 		fetch: getFeedGenerator,
 		staleTime: 60_000,
 		initialData: getInitialFeedGenerator,
-		enabled: () => !!did(),
+		refetchOnWindowFocus: false,
 	});
 
-	const [timeline, { refetch }] = createQuery({
-		key: () => getTimelineKey(uid(), feedParams()),
+	const [timeline, { refetch: refetchTimeline }] = createQuery({
+		key: () => {
+			if (did()) {
+				return getTimelineKey(uid(), feedParams());
+			} else { // help me
+				throw new Error("idk lmao");
+			}
+		},
 		fetch: getTimeline,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		enabled: () => !!did(),
 	});
 
 	const [latest, { mutate: mutateLatest }] = createQuery({
-		key: () => getTimelineLatestKey(uid(), feedParams()),
+		key: () => {
+			const $timeline = timeline();
+			if ($timeline && $timeline.pages[0].cid) {
+				return getTimelineLatestKey(uid(), feedParams());
+			} else { // help me
+				throw new Error("idk lmao");
+			}
+		},
 		fetch: getTimelineLatest,
 		staleTime: 10_000,
 		refetchInterval: 30_000,
-		enabled: () => {
-			const $did = did();
-			const $timeline = timeline();
-
-			if (!$did || !$timeline || !$timeline.pages[0].cid) {
-				return false;
-			}
-
-			return true;
-		},
 	});
-
-	const isSaved = createMemo(() => {
-		const $prefs = getAccountPreferences(uid());
-		const saved = $prefs?.savedFeeds;
-
-		return !!saved && saved.includes(feedUri());
-	});
-
-	const toggleSave = () => {
-		const $prefs = getAccountPreferences(uid());
-		const saved = $prefs.savedFeeds;
-
-		const uri = feedUri();
-
-		if (isSaved()) {
-			if (saved) {
-				const idx = saved.indexOf(uri);
-				saved.splice(idx, 1);
-
-				if (saved.length === 0) {
-					$prefs.savedFeeds = undefined;
-				}
-			}
-		} else if (saved) {
-			saved.push(uri);
-		} else {
-			$prefs.savedFeeds = [uri];
-		}
-	};
 
 	createEffect((prev: ReturnType<typeof timeline> | 0) => {
 		const next = timeline();
@@ -140,11 +122,11 @@ const AuthenticatedFeedPage = () => {
 								<Title
 									render={() => {
 										const $info = info();
-										return `Feed (${$info.displayName.value || feed()}) / Langit`;
+										return `Feed (${$info.name.value || feed()}) / Langit`;
 									}}
 								/>
 								<button onClick={handleGoBack} class="text-base font-bold mr-3 p-3 -ml-3"><ArrowLeftIcon/></button>
-								<p class="text-base font-bold">{info().displayName.value}</p>
+								<p class="text-base font-bold">{info().name.value}</p>
 							</>
 						)}
 					</Match>
@@ -157,72 +139,128 @@ const AuthenticatedFeedPage = () => {
 				</Switch>
 			</div>
 
-			<Show when={info()}>
-				{(info) => {
-					const creator = () => info().creator;
-					const isLiked = () => info().viewer.like.value;
+			<Switch>
+				<Match when={info.error} keyed>
+					{(err) => (
+						<div class="flex flex-col items-center px-4 py-6 text-sm text-muted-fg">
+							<p>Something went wrong</p>
+							<p class="mb-4">{'' + err}</p>
 
-					return (
-						<>
-							<div class="flex flex-col gap-3 border-b border-divider px-4 pb-4 pt-3">
-								<div class="flex gap-4">
-									<div class="mt-2 grow">
-										<p class="break-words text-lg font-bold">{info().displayName.value}</p>
-										<p class="text-sm text-muted-fg">
-											<span>by </span>
-											<a
-												link
-												href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: creator().did })}
-												class="hover:underline"
-											>
-												@{creator().handle.value}
-											</a>
-										</p>
+							<button
+								disabled={info.loading}
+								onClick={() => refetchInfo()}
+								class={/* @once */ button({ color: 'primary' })}
+							>
+								Reload
+							</button>
+						</div>
+					)}
+				</Match>
+
+				<Match when={info()} keyed>
+					{(info) => {
+						const creator = info.creator;
+
+						const isLiked = () => info.viewer.like.value;
+
+						const isSaved = createMemo(() => {
+							const feeds = getFeedPref(uid()).feeds;
+							const uri = feedUri();
+
+							for (let idx = 0, len = feeds.length; idx < len; idx++) {
+								const item = feeds[idx];
+
+								if (item.uri === uri) {
+									return { index: idx, item: item };
+								}
+							}
+						});
+
+						const toggleSave = () => {
+							const feeds = getFeedPref(uid()).feeds;
+							const saved = isSaved();
+
+							if (saved) {
+								feeds.splice(saved.index, 1);
+							} else {
+								feeds.push({ uri: info.uri, name: info.name.value, pinned: false });
+							}
+						};
+
+						return (
+							<>
+								<div class="flex flex-col gap-3 border-b border-divider px-4 pb-4 pt-3">
+									<div class="flex gap-4">
+										<div class="mt-2 grow">
+											<p class="break-words text-lg font-bold">{info.name.value}</p>
+											<p class="text-sm text-muted-fg">
+												<span>by </span>
+												<a
+													link
+													href={generatePath('/u/:uid/profile/:actor', { uid: uid(), actor: creator.did })}
+													class="hover:underline"
+												>
+													@{creator.handle.value}
+												</a>
+											</p>
+										</div>
+
+										<div class="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted-fg">
+											<Show when={info.avatar.value}>
+												{(avatar) => <img src={avatar()} class="h-full w-full" />}
+											</Show>
+										</div>
 									</div>
 
-									<div class="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted-fg">
-										<Show when={info().avatar.value}>
-											{(avatar) => <img src={avatar()} class="h-full w-full" />}
-										</Show>
+									<Show when={info.description.value}>
+										<div class="whitespace-pre-wrap break-words text-sm">{info.$renderedDescription()}</div>
+									</Show>
+
+									<p class="text-sm text-muted-fg">Liked by {comformat.format(info.likeCount.value)} users</p>
+
+									<div class="flex gap-2">
+										<button onClick={toggleSave} class={button({ color: isSaved() ? 'outline' : 'primary' })}>
+											{isSaved() ? 'Unfollow feed' : 'Follow feed'}
+										</button>
+
+										<button
+											title={isLiked() ? 'Unlike this feed' : 'Like this feed'}
+											onClick={() => favoriteFeed(uid(), info)}
+											class={/* @once */ button({ color: 'outline' })}
+										>
+											{isLiked() ? (
+												<FavoriteIcon class="-mx-1.5 text-base text-red-600" />
+											) : (
+												<FavoriteOutlinedIcon class="-mx-1.5 text-base" />
+											)}
+										</button>
+
+										<div class="grow" />
+
+										<button
+											title="More actions"
+											onClick={() => {
+												openModal(() => <FeedMenu uid={uid()} feed={info} />);
+											}}
+											class={/* @once */ button({ color: 'outline' })}
+										>
+											<MoreHorizIcon class="-mx-1.5 text-base" />
+										</button>
 									</div>
 								</div>
-
-								<Show when={info().description.value}>
-									<div class="whitespace-pre-wrap break-words text-sm">{info().$renderedDescription()}</div>
-								</Show>
-
-								<p class="text-sm text-muted-fg">Liked by {comformat.format(info().likeCount.value)} users</p>
-
-								<div class="flex gap-2">
-									<button onClick={toggleSave} class={button({ color: isSaved() ? 'outline' : 'primary' })}>
-										{isSaved() ? 'Remove feed' : 'Add feed'}
-									</button>
-
-									<button
-										title={isLiked() ? 'Unlike this feed' : 'Like this feed'}
-										onClick={() => favoriteFeed(uid(), info())}
-										class={/* @once */ button({ color: 'outline' })}
-									>
-										{isLiked() ? (
-											<FavoriteIcon class="-mx-1.5 text-base text-red-600" />
-										) : (
-											<FavoriteOutlinedIcon class="-mx-1.5 text-base" />
-										)}
-									</button>
-								</div>
-							</div>
-						</>
-					);
-				}}
-			</Show>
+							</>
+						);
+					}}
+				</Match>
+			</Switch>
 
 			<Show when={!info.error}>
 				<TimelineList
 					uid={uid()}
 					timeline={timeline}
 					latest={latest}
-					onLoadMore={(cursor) => refetch(true, cursor)}
-					onRefetch={() => refetch(true)}
+					onLoadMore={(cursor) => refetchTimeline(true, cursor)}
+					onRefetch={() => refetchTimeline(true)}
 				/>
 				<div class=" border-t border-divider h-[30dvh]"></div>
 			</Show>

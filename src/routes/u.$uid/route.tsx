@@ -31,11 +31,10 @@ import AccountCircleIcon from '~/icons/baseline-account-circle.tsx';
 import AccountCircleOutlinedIcon from '~/icons/outline-account-circle.tsx';
 
 import InvalidSessionNoticeDialog from './InvalidSessionNoticeDialog.tsx';
+import RightSidebar from './RightSidebar.tsx';
 
 import { isUpdateReady, updateSW } from '~/utils/service-worker.ts';
 import AddIcon from '~/icons/baseline-add.tsx';
-import SearchInput from '~/components/SearchInput.tsx';
-import { useNavigate } from '@solidjs/router';
 
 const handleError = (error: any, reset: () => void) => {
 	const parseFileName = (file: string) => {
@@ -98,6 +97,7 @@ const AuthenticatedLayout = () => {
 	}
 
 	const isDesktop = useMediaQuery('(width >= 640px)');
+	const isWideDesktop = useMediaQuery('(width >= 1280px)');
 
 	const [profile] = createQuery({
 		key: () => getProfileKey(uid(), uid()),
@@ -180,29 +180,6 @@ const AuthenticatedLayout = () => {
 		createEffect(() => {});
 	});
 
-	const navigate = useNavigate();
-
-
-
-
-	
-	const searchboxWhitelist = [
-		`/u/${uid()}/explore/search`,
-	];
-	const [isSearchboxWhitelisted, setIsSearchboxWhitelisted] = createSignal(false);
-	function updateIsSearchboxWhitelisted() {
-		setIsSearchboxWhitelisted(
-			searchboxWhitelist.some((urlPattern) => {
-				const regex = new RegExp(urlPattern + '$');
-				return regex.test(location.pathname);
-			}),
-		);
-	}
-	createEffect(updateIsSearchboxWhitelisted);
-	onCleanup(() => {
-		createEffect(() => {});
-	});
-
 	return (
 		<div class="mx-auto flex min-h-screen max-w-[1500px] flex-col sm:flex-row sm:justify-center xl:-translate-x-14">
 			<Show when={isDesktop()}>
@@ -237,7 +214,7 @@ const AuthenticatedLayout = () => {
 
 						<A
 							href={generatePath('/u/:uid/explore', { uid: uid() })}
-							title="Search"
+							title="Explore"
 							class="group flex items-center rounded-full hover:bg-hinted p-3 xl:mr-auto"
 							activeClass="is-active"
 						>
@@ -343,19 +320,10 @@ const AuthenticatedLayout = () => {
 				</ErrorBoundary>
 			</div>
 
-			<div class="hidden xl:flex sticky top-0 h-screen flex-col xl:basis-[30%]">
-				<div class={`ml-4 mt-2 max-w-xs ${isSearchboxWhitelisted() ? 'hidden' : ''}`}>	
-					<SearchInput
-						onEnter={(next) => {
-							if (next.trim()) {
-								const path =
-									generatePath('/u/:uid/explore/search', { uid: uid() }) +
-									`?t=user&q=${encodeURIComponent(next)}`;
-								navigate(path);
-							}
-						}}
-					/>
-				</div>
+			<div class="hidden basis-1/4 xl:block">
+				<Show when={isWideDesktop()}>
+					<RightSidebar uid={uid()} />
+				</Show>
 			</div>
 
 			<Show when={!isDesktop()}>

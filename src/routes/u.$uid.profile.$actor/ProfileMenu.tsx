@@ -1,12 +1,12 @@
-import { Show, batch, createMemo, lazy } from 'solid-js';
+import { Show, createMemo, lazy } from 'solid-js';
 
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 
 import type { SignalizedProfile } from '~/api/cache/profiles.ts';
 
 import { multiagent } from '~/globals/agent.ts';
-import { closeModal, openModal } from '~/globals/modals.tsx';
-import { getAccountPreferences, isProfileTemporarilyMuted } from '~/globals/preferences.ts';
+import { closeModal, replaceModal } from '~/globals/modals.tsx';
+import { getFilterPref, isProfileTemporarilyMuted } from '~/globals/settings.ts';
 import { generatePath } from '~/router.ts';
 
 import BlockConfirmDialog from '~/components/dialogs/BlockConfirmDialog.tsx';
@@ -35,18 +35,18 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 	const uid = () => props.uid;
 	const profile = () => props.profile;
 
-	const prefs = createMemo(() => {
-		return getAccountPreferences(uid());
-	});
-
 	const isMuted = () =>
 		profile().viewer.muted.value || isProfileTemporarilyMuted(uid(), profile().did) !== null;
 	const isBlocked = () => profile().viewer.blocking.value;
 
-	const isRepostHidden = () => {
-		const $prefs = prefs();
-		return !!$prefs.pf_hideReposts?.includes(profile().did);
-	};
+	const isRepostHidden = createMemo(() => {
+		const prefs = getFilterPref(uid());
+		const index = prefs.hideReposts.indexOf(profile().did);
+
+		if (index !== -1) {
+			return { index: index };
+		}
+	});
 
 	return (
 		<div class={/* @once */ menu.content()}>
@@ -64,9 +64,7 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 			<Show when={Object.keys(multiagent.accounts).length > 1}>
 				<button
 					onClick={() => {
-						closeModal();
-
-						openModal(() => (
+						replaceModal(() => (
 							<SwitchAccountMenu
 								uid={uid()}
 								redirect={(uid) => generatePath('/u/:uid/profile/:actor', { uid: uid, actor: profile().did })}
@@ -82,8 +80,9 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 
 			<button
 				onClick={() => {
-					closeModal();
-					openModal(() => <AddProfileListDialog uid={uid()} profile={profile()} />);
+					// TODO: no idea why Suspense is getting triggered here despite it not making use of it
+					// at all, investigate later.
+					replaceModal(() => <AddProfileListDialog uid={uid()} profile={profile()} />, { suspense: false });
 				}}
 				class={/* @once */ menu.item()}
 			>
@@ -93,31 +92,16 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 
 			<button
 				onClick={() => {
-					const $prefs = prefs();
-					const $did = profile().did;
+					const prefs = getFilterPref(uid());
+					const did = profile().did;
 
-					const curr = $prefs.pf_hideReposts;
+					const hideReposts = prefs.hideReposts;
+					const repostHidden = isRepostHidden();
 
-					if (isRepostHidden()) {
-						if (curr) {
-							const index = curr.indexOf($did);
-
-							batch(() => {
-								if (index !== -1) {
-									curr.splice(index, 1);
-								}
-
-								if (curr.length < 1) {
-									$prefs.pf_hideReposts = undefined;
-								}
-							});
-						}
+					if (repostHidden) {
+						hideReposts.splice(repostHidden.index, 1);
 					} else {
-						if (curr) {
-							curr.push($did);
-						} else {
-							$prefs.pf_hideReposts = [$did];
-						}
+						hideReposts.push(did);
 					}
 
 					closeModal();
@@ -132,8 +116,7 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 
 			<button
 				onClick={() => {
-					closeModal();
-					openModal(() => <LazyMuteConfirmDialog uid={uid()} profile={profile()} />);
+					replaceModal(() => <LazyMuteConfirmDialog uid={uid()} profile={profile()} />);
 				}}
 				class={/* @once */ menu.item()}
 			>
@@ -145,8 +128,7 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 
 			<button
 				onClick={() => {
-					closeModal();
-					openModal(() => <BlockConfirmDialog uid={uid()} profile={profile()} />);
+					replaceModal(() => <BlockConfirmDialog uid={uid()} profile={profile()} />);
 				}}
 				class={/* @once */ menu.item()}
 			>
@@ -158,8 +140,9 @@ const ProfileMenu = (props: ProfileMenuProps) => {
 
 			<button
 				onClick={() => {
-					closeModal();
-					openModal(() => <ReportDialog uid={uid()} report={{ type: REPORT_PROFILE, did: profile().did }} />);
+					replaceModal(() => (
+						<ReportDialog uid={uid()} report={{ type: REPORT_PROFILE, did: profile().did }} />
+					));
 				}}
 				class={/* @once */ menu.item()}
 			>

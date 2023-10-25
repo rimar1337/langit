@@ -1,48 +1,50 @@
-import { For, Show, Suspense, createEffect, createMemo } from 'solid-js';
+import { For, Show, createEffect, createMemo } from 'solid-js';
 
 import type { DID } from '@intrnl/bluesky-client/atp-schema';
 import { createQuery } from '@intrnl/sq';
 import { useSearchParams } from '@solidjs/router';
 
 import {
-	getFeedGenerator,
-	getFeedGeneratorKey,
-	getInitialFeedGenerator,
-} from '~/api/queries/get-feed-generator.ts';
-import {
-	type CustomTimelineParams,
+	type FeedTimelineParams,
 	type HomeTimelineParams,
 	getTimeline,
 	getTimelineKey,
 	getTimelineLatest,
 	getTimelineLatestKey,
+	type ListTimelineParams,
 } from '~/api/queries/get-timeline.ts';
 
-import { preferences } from '~/globals/preferences.ts';
+import { getCollectionId } from '~/api/utils.ts';
+
+import { getFeedPref, type FeedPreference } from '~/globals/settings.ts';
 import { useParams } from '~/router.ts';
 import { Title } from '~/utils/meta.tsx';
+import { assert } from '~/utils/misc.ts';
+import type { UnpackArray } from '~/utils/types.ts';
 
 import { Tab } from '~/components/Tab.tsx';
 import TimelineList from '~/components/TimelineList.tsx';
-
 import { isUpdateReady, updateSW } from '~/utils/service-worker.ts';
 
-const FeedTab = (props: { uid: DID; uri: string; active: boolean; onClick?: () => void }) => {
-	const [feed] = createQuery({
-		key: () => getFeedGeneratorKey(props.uid, props.uri),
-		fetch: getFeedGenerator,
-		staleTime: 30_000,
-		initialData: getInitialFeedGenerator,
-	});
+interface FeedTabProps {
+	uid: DID;
+	item: UnpackArray<FeedPreference['feeds']>;
+	active: boolean;
+	onClick?: () => void;
+}
+
+const FeedTab = (props: FeedTabProps) => {
+	// `item` and `item.uri` is expected to be static
+	const item = props.item;
 
 	return (
 		<Tab<'button'> component="button" active={props.active} onClick={props.onClick}>
-			{feed()?.displayName.value}
+			{item.name}
 		</Tab>
 	);
 };
 
-const Feed = (props: { uid: DID; params: HomeTimelineParams | CustomTimelineParams }) => {
+const Feed = (props: { uid: DID; params: HomeTimelineParams | FeedTimelineParams }) => {
 	const uid = () => props.uid;
 	const params = () => props.params;
 
@@ -55,19 +57,17 @@ const Feed = (props: { uid: DID; params: HomeTimelineParams | CustomTimelinePara
 	});
 
 	const [latest, { mutate: mutateLatest }] = createQuery({
-		key: () => getTimelineLatestKey(uid(), params()),
+		key: () => {
+			const $timeline = timeline();
+			if ($timeline && $timeline.pages[0].cid) {
+				return getTimelineLatestKey(uid(), params());
+			} else { // help me
+				throw new Error("idk lmao");
+			}
+		},
 		fetch: getTimelineLatest,
 		staleTime: 10_000,
 		refetchInterval: 30_000,
-		enabled: () => {
-			const $timeline = timeline();
-
-			if (!$timeline || !$timeline.pages[0].cid) {
-				return false;
-			}
-
-			return true;
-		},
 	});
 
 	createEffect((prev: ReturnType<typeof timeline> | 0) => {
@@ -103,8 +103,10 @@ const AuthenticatedHome = () => {
 	const feed = () => searchParams.feed;
 
 	const pinnedFeeds = createMemo(() => {
-		const arr = preferences[uid()]?.pinnedFeeds;
-		return arr && arr.length > 0 ? arr : undefined;
+		const prefs = getFeedPref(uid());
+		const pinned = prefs.feeds.filter((item) => item.pinned);
+
+		return pinned.length > 0 ? pinned : undefined;
 	});
 
 	return (
@@ -129,43 +131,52 @@ const AuthenticatedHome = () => {
 			</div>
 
 			<Show when={pinnedFeeds()}>
-				<Suspense fallback={<hr class="-mt-px border-divider" />}>
-					<div class="sticky top-0 z-10 flex h-11 xl:h-13 items-center overflow-x-auto border-b border-divider bg-background/70 backdrop-blur-md">
-						<Tab<'button'>
-							component="button"
-							active={!feed()}
-							onClick={() => {
-								setSearchParams({ feed: null }, { replace: true });
-								window.scrollTo({ top: 0 });
-							}}
-						>
-							Following
-						</Tab>
+				<div class="sticky top-0 z-10 flex h-11 xl:h-13 items-center overflow-x-auto border-b border-divider bg-background/70 backdrop-blur-md">
+					<Tab<'button'>
+						component="button"
+						active={!feed()}
+						onClick={() => {
+							setSearchParams({ feed: null }, { replace: true });
+							window.scrollTo({ top: 0 });
+						}}
+					>
+						Following
+					</Tab>
 
-						<For each={pinnedFeeds()}>
-							{(uri) => (
-								<FeedTab
-									uid={uid()}
-									uri={uri}
-									active={feed() === uri}
-									onClick={() => {
-										setSearchParams({ feed: uri }, { replace: true });
-										window.scrollTo({ top: 0 });
-									}}
-								/>
-							)}
-						</For>
-					</div>
-				</Suspense>
+					<For each={pinnedFeeds()}>
+						{(item) => (
+							<FeedTab
+								uid={uid()}
+								item={item}
+								active={feed() === item.uri}
+								onClick={() => {
+									setSearchParams({ feed: item.uri }, { replace: true });
+									window.scrollTo({ top: 0 });
+								}}
+							/>
+						)}
+					</For>
+				</div>
 			</Show>
 
 			<Show when={feed() ?? true} keyed>
 				{($feed) => {
-					const params: HomeTimelineParams | CustomTimelineParams =
-						$feed !== true
-							? { type: 'custom', uri: $feed }
-							: { type: 'home', algorithm: 'reverse-chronological' };
+					let params: HomeTimelineParams | FeedTimelineParams | ListTimelineParams;
+					if ($feed === true) {
+						params = { type: 'home', algorithm: 'reverse-chronological' };
+					} else {
+						const collection = getCollectionId($feed);
 
+						if (collection === 'app.bsky.feed.generator') {
+							params = { type: 'feed', uri: $feed };
+						} else if (collection === 'app.bsky.graph.list') {
+							params = { type: 'list', uri: $feed };
+						} else {
+							assert(false, `unexpected collection`);
+						}
+					}
+
+					// @ts-expect-error
 					return <Feed uid={uid()} params={params} />;
 				}}
 			</Show>

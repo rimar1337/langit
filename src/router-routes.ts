@@ -43,20 +43,16 @@ const routes: RouteDefinition[] = [
         component: lazy(() => import("./routes/u.$uid.profile.$actor_.post.$status._index/route.tsx")),
       },
       {
-        path: "profile/:actor/lists/:list",
-        component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list._index/route.tsx")),
-      },
-      {
         path: "profile/:actor/post/:status/likes",
         component: lazy(() => import("./routes/u.$uid.profile.$actor_.post.$status.likes/route.tsx")),
       },
       {
-        path: "you/moderation/keyword-filter/add",
-        component: lazy(() => import("./routes/u.$uid.you.moderation.keyword-filter.add/route.tsx")),
+        path: "profile/:actor/lists/:list/edit",
+        component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list_.edit/route.tsx")),
       },
       {
-        path: "profile/:actor/lists/:list/edit",
-        component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list.edit/route.tsx")),
+        path: "you/moderation/keyword-filter/add",
+        component: lazy(() => import("./routes/u.$uid.you.moderation.keyword-filter.add/route.tsx")),
       },
       {
         path: "you/moderation/lists/self",
@@ -69,6 +65,20 @@ const routes: RouteDefinition[] = [
       {
         path: "you/moderation/repost-filter",
         component: lazy(() => import("./routes/u.$uid.you.moderation.repost-filter/route.tsx")),
+      },
+      {
+        path: "profile/:actor/lists/:list",
+        component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list/route.tsx")),
+        children: [
+          {
+            path: "/",
+            component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list._index/route.tsx")),
+          },
+          {
+            path: "feed",
+            component: lazy(() => import("./routes/u.$uid.profile.$actor_.lists.$list.feed/route.tsx")),
+          },
+        ],
       },
       {
         path: "you/moderation/lists",
@@ -169,12 +179,20 @@ const routes: RouteDefinition[] = [
         component: lazy(() => import("./routes/u.$uid.notifications/route.tsx")),
       },
       {
+        path: "explore/tags",
+        component: lazy(() => import("./routes/u.$uid.explore.tags/route.tsx")),
+      },
+      {
         path: "you/invites",
         component: lazy(() => import("./routes/u.$uid.you.invites/route.tsx")),
       },
       {
         path: "you",
         component: lazy(() => import("./routes/u.$uid.you._index/route.tsx")),
+      },
+      {
+        path: "tags/:tag",
+        component: lazy(() => import("./routes/u.$uid.tags.$tag/route.tsx")),
       },
       {
         path: "compose",
