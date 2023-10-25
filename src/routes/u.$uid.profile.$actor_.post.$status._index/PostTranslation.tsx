@@ -29,7 +29,7 @@ const PostTranslation = (props: PostTranslationProps) => {
 			);
 			url.searchParams.set('sl', 'auto');
 			url.searchParams.set('tl', target);
-			url.searchParams.set('q', text);
+			url.searchParams.set('text', text);
 
 			const response = await fetch(url);
 			const json = await response.json();

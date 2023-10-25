@@ -26,13 +26,13 @@ const RightSidebar = (props: RightSidebarProps) => {
 	});
 
 	return (
-		<div class="sticky top-0 flex h-screen flex-col gap-4 overflow-y-auto p-4">
+		<div class="sticky top-0 flex h-screen flex-col gap-3 overflow-y-auto px-4 py-3">
 			<Show when={!isExplorePage()}>
 				{(_value) => {
 					const navigate = useNavigate();
 
 					return (
-						<div>
+						<div class="-mt-1">
 							<SearchInput
 								onEnter={(next) => {
 									if (next.trim()) {
@@ -42,6 +42,7 @@ const RightSidebar = (props: RightSidebarProps) => {
 										navigate(path);
 									}
 								}}
+								tall
 							/>
 						</div>
 					);
@@ -63,22 +64,22 @@ const TrendingSection = (props: { uid: DID }) => {
 	});
 
 	return (
-		<div class="flex flex-col text-sm">
-			<h3 class="px-4 pb-2 font-bold text-muted-fg">Trending now</h3>
+		<div class="flex flex-col text-sm bg-lightbg rounded-2xl">
+			<h3 class="px-4 py-3 font-bold text-xl text-[24px]">Trending now</h3>
 
 			<Switch>
 				<Match when={trending()}>
 					{(trending) => (
 						<>
-							<For each={trending().slice(0, 5)}>
+							<For each={trending().slice(0, 8)}>
 								{(topic) => (
 									<a
 										link
 										href={generatePath('/u/:uid/tags/:tag', { uid: props.uid, tag: topic.name })}
-										class="mx-1 rounded px-3 py-2 hover:bg-hinted"
+										class="px-4 py-3 hover:bg-gray-500/10"
 									>
-										<p class="font-bold">#{topic.name}</p>
-										<p class="text-muted-fg">{topic.count} posts</p>
+										<p class="font-bold text-[15px]">#{topic.name}</p>
+										<p class="text-muted-fg text-[13px]">{topic.count} posts</p>
 									</a>
 								)}
 							</For>
@@ -86,7 +87,7 @@ const TrendingSection = (props: { uid: DID }) => {
 							<a
 								link
 								href={generatePath('/u/:uid/explore/tags', props)}
-								class="mx-1 rounded px-3 py-2 text-accent hover:bg-hinted"
+								class="rounded-b-2xl px-4 pt-2 pb-3 text-accent hover:bg-gray-500/10"
 							>
 								Show more
 							</a>

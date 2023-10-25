@@ -55,8 +55,6 @@ const AuthenticatedFeedPage = () => {
 		key: () => {
 			if (did()) {
 				return getFeedGeneratorKey(uid(), feedUri());
-			} else { // help me
-				throw new Error("idk lmao");
 			}
 		},
 		fetch: getFeedGenerator,
@@ -69,8 +67,6 @@ const AuthenticatedFeedPage = () => {
 		key: () => {
 			if (did()) {
 				return getTimelineKey(uid(), feedParams());
-			} else { // help me
-				throw new Error("idk lmao");
 			}
 		},
 		fetch: getTimeline,
@@ -84,8 +80,6 @@ const AuthenticatedFeedPage = () => {
 			const $timeline = timeline();
 			if ($timeline && $timeline.pages[0].cid) {
 				return getTimelineLatestKey(uid(), feedParams());
-			} else { // help me
-				throw new Error("idk lmao");
 			}
 		},
 		fetch: getTimelineLatest,

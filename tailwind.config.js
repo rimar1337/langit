@@ -70,6 +70,8 @@ export default {
 			blue: colors.blue,
 			cyan: colors.cyan,
 			sky: colors.sky,
+			gray: colors.gray,
+			lightbg: 'rgb(var(--lightbg))',
 		},
 		fontFamily: {
 			sans: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`,

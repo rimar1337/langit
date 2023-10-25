@@ -28,8 +28,6 @@ const AuthenticatedListPage = () => {
 			const $did = did();
 			if ($did) {
 				return getListMembersKey(uid(), createListUri($did, params.list));
-			} else { // help me
-				throw new Error("idk lmao");
 			}
 		},
 		fetch: getListMembers,

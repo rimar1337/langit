@@ -61,8 +61,6 @@ const Feed = (props: { uid: DID; params: HomeTimelineParams | FeedTimelineParams
 			const $timeline = timeline();
 			if ($timeline && $timeline.pages[0].cid) {
 				return getTimelineLatestKey(uid(), params());
-			} else { // help me
-				throw new Error("idk lmao");
 			}
 		},
 		fetch: getTimelineLatest,

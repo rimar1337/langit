@@ -320,10 +320,12 @@ const AuthenticatedLayout = () => {
 				</ErrorBoundary>
 			</div>
 
-			<div class="hidden basis-1/4 xl:block">
-				<Show when={isWideDesktop()}>
-					<RightSidebar uid={uid()} />
-				</Show>
+			<div class="hidden xl:flex sticky top-0 h-screen flex-col xl:basis-[30%]">
+				<div class="max-w-[350px]">
+					<Show when={isWideDesktop()}>
+						<RightSidebar uid={uid()} />
+					</Show>
+				</div>
 			</div>
 
 			<Show when={!isDesktop()}>
